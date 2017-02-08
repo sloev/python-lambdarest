@@ -8,7 +8,6 @@ import json
 import copy
 
 from lambdarest import create_lambda_handler
-from jsonschema import ValidationError
 
 def assert_not_called(mock):
     assert mock.call_count == 0
@@ -155,4 +154,4 @@ class TestCliMethods(unittest.TestCase):
         self.lambda_handler.handle("post", schema=post_schema)(
             post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {"body": '"Error"', "statusCode": 500, "headers": {}}
+        assert result == {"body": '"Validation Error"', "statusCode": 400, "headers": {}}
