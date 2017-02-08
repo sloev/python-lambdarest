@@ -21,12 +21,7 @@ mccabe:
 
 pep257:
     # docstring checking
-    run: true
-    disable:
-        - D202
-        - D203
-        - D211
-        - D104
+    run: false
 
 pep8:
     # style checking
