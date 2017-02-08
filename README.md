@@ -93,7 +93,7 @@ invalid_input_event = {
     "httpMethod": "GET"
 }
 result = lambda_handler(event=invalid_input_event)
-assert result == {"body": '"Error"', "statusCode": 500, "headers":{}}
+assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ```
 
 ## tests

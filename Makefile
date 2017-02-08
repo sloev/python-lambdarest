@@ -46,6 +46,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
+	rm -f test_readme.py
 
 lint: ## check style with flake8
 	flake8 python_simple_trustpilo_api_client tests
@@ -53,7 +54,8 @@ lint: ## check style with flake8
 test: ## run tests quickly with the default Python
 	py.test
 
-test-all: ## run all versions/tests with dtox (dockerized)
+test-all: clean-test ## run all versions/tests with dtox (dockerized)
+	@echo "Running all tests in Docker using dtox"
 	docker run --rm -it -e LC_ALL=C.UTF-8 -e LANG=C.UTF-8 -v $$PWD:/src:ro realcundo/dtox $$PWD
 
 coverage: ## check code coverage quickly with the default Python

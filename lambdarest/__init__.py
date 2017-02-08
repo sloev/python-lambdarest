@@ -7,7 +7,7 @@ __version__ = '0.0.1'
 
 import json
 import logging
-from jsonschema import validate
+from jsonschema import validate, ValidationError
 import strict_rfc3339
 from jsonschema import FormatChecker
 
@@ -63,33 +63,47 @@ def create_lambda_handler():
         # Save context within event for easy access
         event["context"] = context
         method_name = event["httpMethod"].lower()
+        func = None
+        error_tuple = ("[Error", 500)
+        logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
             func = http_methods[method_name]
         except KeyError:
-            return Response("Http method {} not supported".format(
-                method_name), 500).to_json()
-        try:
-            response = func(event)
-            if not isinstance(response, Response):
-                # Set defaults
-                status_code = headers = None
+            logging.warning(logging_message.format(
+                status_code=405, message="Not supported"))
+            error_tuple = ("Not supported", 405)
+        if func:
+            try:
+                response = func(event)
+                if not isinstance(response, Response):
+                    # Set defaults
+                    status_code = headers = None
 
-                if isinstance(response, tuple):
-                    response_len = len(response)
-                    if response_len > 3:
-                        raise ValueError(
-                            "Response tuple has more than 3 items")
-                    # Unpack the tuple, missing items will be defaulted to None
-                    body, status_code, headers = response + (None,) * (
-                        3 - response_len)
-                else:  # if response is string, dict, etc,
-                    body = response
-                response = Response(body, status_code, headers)
-            return response.to_json()
-        except:
-            # no runtime exceptions are left unhandled
-            logging.exception({"message": "error", "method": method_name})
-            return Response("Error", 500).to_json()
+                    if isinstance(response, tuple):
+                        response_len = len(response)
+                        if response_len > 3:
+                            raise ValueError(
+                                "Response tuple has more than 3 items")
+                        # Unpack the tuple, missing items will be defaulted to None
+                        body, status_code, headers = response + (None,) * (
+                            3 - response_len)
+                    else:  # if response is string, dict, etc,
+                        body = response
+                    response = Response(body, status_code, headers)
+                return response.to_json()
+            except ValidationError as error:
+                error_description = "Schema[{}] with value {}".format(
+                    "][".join(error.absolute_schema_path), error.message)
+                logging.warning(logging_message.format(
+                    status_code=400, message=error_description))
+                error_tuple = ("Validation Error", 400)
+            except Exception as error:
+                # no runtime exceptions are left unhandled
+                logging.exception(logging_message.format(
+                    status_code=500, message=str(error)))
+
+        body, status_code = error_tuple
+        return Response(body, status_code).to_json()
 
     def inner_handler(method_name, schema=None, load_json=True):
         if schema and not load_json:
