@@ -96,7 +96,7 @@ result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ```
 
-## tests
+## Tests
 * Use pytest to run tests with current python version.
 * Use tox or the builtin `test-all` make target to run tests for all platforms
 
@@ -106,7 +106,7 @@ $ make test-all
 dependencies for tests: see requirements_dev.txt
 
 
-## contributions
+## Contributions
 
 * use github issues for bugs/requests
 * PR's welcome, will be code reviewed
