@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Lambdarest - python pico framework for AWS lambda
+
+copyright Trustpilot 2017
+License: MIT
+"""
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
@@ -7,21 +12,20 @@ __version__ = '0.0.1'
 
 import json
 import logging
-from jsonschema import validate, ValidationError
-import strict_rfc3339
-from jsonschema import FormatChecker
+from jsonschema import validate, ValidationError, FormatChecker
 
 
 validate_kwargs = {"format_checker": FormatChecker()}
 
 
 class Response:
-    """ Class to conceptualize a response with defaulted attributes
+    """Class to conceptualize a response with defaulted attributes
 
     if no body is specified, empty string is returned
     if no status_code is specified, 200 is returned
     if no headers ae specified, empty dict is returned
     """
+
     def __init__(self, body=None, status_code=None, headers=None):
         self.body = body
         self.status_code = status_code
@@ -36,7 +40,7 @@ class Response:
 
 
 def create_lambda_handler():
-    """ Create a lambda handler function with `handle` decorator as attribute
+    """Create a lambda handler function with `handle` decorator as attribute
 
     example:
         lambda_handler = create_lambda_handler()
@@ -68,10 +72,12 @@ def create_lambda_handler():
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
             func = http_methods[method_name]
+
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
             error_tuple = ("Not supported", 405)
+
         if func:
             try:
                 response = func(event)
@@ -84,19 +90,23 @@ def create_lambda_handler():
                         if response_len > 3:
                             raise ValueError(
                                 "Response tuple has more than 3 items")
+
                         # Unpack the tuple, missing items will be defaulted to None
                         body, status_code, headers = response + (None,) * (
                             3 - response_len)
+
                     else:  # if response is string, dict, etc,
                         body = response
                     response = Response(body, status_code, headers)
                 return response.to_json()
+
             except ValidationError as error:
                 error_description = "Schema[{}] with value {}".format(
                     "][".join(error.absolute_schema_path), error.message)
                 logging.warning(logging_message.format(
                     status_code=400, message=error_description))
                 error_tuple = ("Validation Error", 400)
+
             except Exception as error:
                 # no runtime exceptions are left unhandled
                 logging.exception(logging_message.format(
@@ -119,6 +129,7 @@ def create_lambda_handler():
                         # jsonschema.validate using given schema
                         validate(json_data, schema, **validate_kwargs)
                 return func(event, *args, **kwargs)
+
             # register http handler function
             http_methods[method_name] = inner
             return inner

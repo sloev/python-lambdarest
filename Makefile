@@ -54,7 +54,7 @@ lint: ## check style with flake8
 test: ## run tests quickly with the default Python
 	py.test
 
-test-all: clean-test ## run all versions/tests with dtox (dockerized)
+test-all: clean ## run all versions/tests with dtox (dockerized)
 	@echo "Running all tests in Docker using dtox"
 	docker run --rm -it -e LC_ALL=C.UTF-8 -e LANG=C.UTF-8 -v $$PWD:/src:ro realcundo/dtox $$PWD
 

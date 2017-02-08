@@ -9,14 +9,10 @@ python:
   - "3.5"
 
 install:
-  - pip install prospector --quiet 2> /dev/null
-  - pip install pytest
   - pip install tox
   - pip install tox-travis
-  - pip install -r requirements.txt --quiet
 
 script:
-  - prospector --strictness low --ignore-paths build-scripts
   - tox
 
 branches:

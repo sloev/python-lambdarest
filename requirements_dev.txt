@@ -5,3 +5,4 @@ PyYAML==3.11
 pytest==2.9.2
 mock>=2.0.0
 pytest-readme>=1.0.0
+prospector

@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.com/trustpilot/python-lambdarest)  [![pypi](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)  [![python versions](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)  [![trustpilot](https://images-static.trustpilot.com/api/logos/light-bg/120x14.png)](https://trustpilot.com)
+[![Build Status](https://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![pypi](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)  [![python versions](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)  [![trustpilot](https://images-static.trustpilot.com/api/logos/light-bg/120x14.png)](https://trustpilot.com)
 
 # Lambdarest - python pico framework for AWS lambda
 
@@ -7,30 +7,30 @@ Pico framework for AWS lambda with optional JSON-schema validation.
 &nbsp;
 
 
-####Includes:####
+###Includes:###
 * lambda_handler function constructor with builtin dispatcher
 * decorator to register functions to handle http-methods
 * optional JSON-schema input validation using same decorator
 
 ## install
 
-####Python versions####
+###Python versions###
 Tested on 2.7, 3.3, 3.4, 3.5
 see `tox.ini` for more info.
 
-####dependencies####
+###dependencies###
 Requires the following dependencies (will be installed automatically):
 ```
 jsonschema>=2.5.1
 strict-rfc3339>=0.7
 ```
 
-####Install from pypi####
+###Install from pypi###
 ```
 pip install lambdarest
 ```
 
-####Install from git####
+###Install from git###
 ```
 pip install git+https://github.com/trustpilot/python-lambdarest.git
 or
