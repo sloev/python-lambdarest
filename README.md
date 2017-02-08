@@ -43,18 +43,25 @@ sudo python setup.py install
 This module gives you the option of using different functions to handle
 different http methods.
 
-```
+```python
 from lambdarest import create_lambda_handler
 
 lambda_handler = create_lambda_handler()
 
 @lambda_handler.handle("get")
 def my_own_get(event):
-    return {"this":"will be json dumped"}
+    return {"this": "will be json dumped"}
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-And it also works with schema validaton:
-```
+Optionally you can also validate incomming json body with JSON schemas
+```python
 from lambdarest import create_lambda_handler
 
 lambda_handler = create_lambda_handler()
@@ -71,20 +78,22 @@ my_schema = {
 
 @lambda_handler.handle("get", schema=my_schema)
 def my_own_get(event):
-    return {"this":"will be json dumped"}
+    return {"this": "will be json dumped"}
 
 valid_input_event = {
-    "body": '{"foo":"bar"}'
+    "body": '{"foo":"bar"}',
+    "httpMethod": "GET"
 }
 result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"this":"will be json dumped"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 
 
 invalid_input_event = {
-    "body": '{"foo":666}'
+    "body": '{"foo":666}',
+    "httpMethod": "GET"
 }
 result = lambda_handler(event=invalid_input_event)
-assert result == {"body": 'Error', "statusCode": 500, "headers":{}}
+assert result == {"body": '"Error"', "statusCode": 500, "headers":{}}
 ```
 
 ## tests

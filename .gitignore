@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .idea/
 creds.json
+test_readme.py
 
 # C extensions
 *.so
