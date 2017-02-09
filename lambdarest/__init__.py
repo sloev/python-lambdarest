@@ -7,7 +7,7 @@ License: MIT
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 
 import json

@@ -18,7 +18,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'jsonschema>=2.5.1',
-    'strict-rfc3339>=0.7',
+    'strict_rfc3339>=0.7',
 ]
 
 test_requirements = [
@@ -27,7 +27,7 @@ test_requirements = [
 
 setup(
     name='lambdarest',
-    version='0.0.5',
+    version='0.0.6',
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + '\n\n' + history,
     author="jgv",

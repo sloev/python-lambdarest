@@ -11,45 +11,30 @@ test-warnings: true
 output-format: grouped
 
 dodgy:
-    # Looks at Python code to search for things which look "dodgy"
-    # such as passwords or git conflict artifacts
     run: true
 
 mccabe:
-    # complexity checking.
     run: false
 
 pep257:
-    # docstring checking
     run: false
 
 pep8:
-    # style checking
     run: true
     options:
         max-line-length: 100
 
 pyflakes:
-    # preferring 'frosted' instead (a fork of)
     run: true
 
 pylint:
-    # static analysis and then some
     run: true
     options:
         max-line-length: 80
-        # allow 'log' as global constant
         const-rgx: "(([A-Z_][A-Z0-9_]*)|(__.*__)|log)$"
         const-hint: "(([A-Z_][A-Z0-9_]*)|(__.*__)|log)$"
-        # pytest module has dynamically assigned functions,
-        # raising errors such as: E1101: Module 'pytest' has
-        # no 'mark' member
         ignored-classes: pytest
     disable:
-        # Too many lines in module
         - C0302
-        # Used * or ** magic
         - W0142
-        # Used builtin function 'filter'.
-        # (For maintainability, one should prefer list comprehension.)
         - W0141
