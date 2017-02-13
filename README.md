@@ -14,8 +14,7 @@ Python pico framework for [AWS Lambda](https://aws.amazon.com/lambda/) with opti
 
 ###Python versions###
 
-Tested on 2.7, 3.3, 3.4, 3.5
-see `tox.ini` for more info.
+Tested on 2.7, 3.3, 3.4, 3.5 see [`tox.ini`](tox.ini) for more info.
 
 ###dependencies###
 Requires the following dependencies (will be installed automatically):
