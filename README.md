@@ -66,7 +66,7 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-Optionally you can also validate incomming JSON body with JSON schemas:
+Optionally you can also validate incoming JSON body with JSON schemas:
 
 ```python
 from lambdarest import create_lambda_handler
