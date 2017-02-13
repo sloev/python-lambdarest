@@ -66,7 +66,7 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-Optionally you can also validate incomming JSON body with JSON schemas
+Optionally you can also validate incomming JSON body with JSON schemas:
 
 ```python
 from lambdarest import create_lambda_handler
@@ -105,8 +105,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 
 ## Tests
 
-* Use pytest to run tests with the current python version.
-* Use tox or the built-in `test-all` make target to run tests for all platforms.
+You can use pytest to run tests against your current Python version. To run tests for all platforms, use tox or the built-in `test-all` Make target:
 
 ```
 $ make test-all
