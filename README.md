@@ -1,4 +1,4 @@
-[![Build Status](http://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![pypi](https://badge.fury.io/py/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)  [![trustpilot](https://images-static.trustpilot.com/api/logos/light-bg/120x14.png)](https://trustpilot.com)
+[![Build Status](http://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![pypi](https://badge.fury.io/py/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
 
 # Lambdarest - python pico framework for AWS lambda
 
