@@ -4,34 +4,42 @@
 
 Python pico framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
-###Includes:###
+###Includes###
 
 * `lambda_handler` function constructor with built-in dispatcher
-* decorator to register functions to handle HTTP methods
-* optional JSON-schema input validation using same decorator
+* Decorator to register functions to handle HTTP methods
+* Optional JSON-schema input validation using same decorator
 
 ## Install
 
 ###Python versions###
 
-Tested on 2.7, 3.3, 3.4, 3.5 see [`tox.ini`](tox.ini) for more info.
+Tested on 2.7, 3.3, 3.4, 3.5. See [`tox.ini`](tox.ini) for more info.
 
 ###dependencies###
+
 Requires the following dependencies (will be installed automatically):
+
 ```
 jsonschema>=2.5.1
 strict-rfc3339>=0.7
 ```
 
 ###Install from pypi###
-```
+
+```bash
 pip install lambdarest
 ```
 
 ###Install from git###
-```
+
+```bash
 pip install git+https://github.com/trustpilot/python-lambdarest.git
+```
+
 or
+
+```
 git clone https://github.com/trustpilot/python-lambdarest.git
 cd python-lambdarest
 sudo python setup.py install
