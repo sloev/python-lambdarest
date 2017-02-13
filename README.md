@@ -4,9 +4,6 @@
 
 Pico framework for AWS lambda with optional JSON-schema validation.
 
-&nbsp;
-
-
 ###Includes:###
 * lambda_handler function constructor with builtin dispatcher
 * decorator to register functions to handle http-methods
