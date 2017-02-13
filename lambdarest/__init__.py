@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Lambdarest - python pico framework for AWS lambda
 
-copyright Trustpilot 2017
-License: MIT
-"""
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
@@ -19,11 +15,11 @@ validate_kwargs = {"format_checker": FormatChecker()}
 
 
 class Response:
-    """Class to conceptualize a response with defaulted attributes
+    """Class to conceptualize a response with default attributes
 
     if no body is specified, empty string is returned
     if no status_code is specified, 200 is returned
-    if no headers ae specified, empty dict is returned
+    if no headers are specified, empty dict is returned
     """
 
     def __init__(self, body=None, status_code=None, headers=None):
@@ -49,15 +45,15 @@ def create_lambda_handler():
             pass
 
     Inner_lambda_handler:
-    is the one you will receive when calling this
-    function. It acts like a dispatcher calling the registered http handler
-    functions on the basis of the incomming httpMethod.
+    is the one you will receive when calling this function. It acts like a
+    dispatcher calling the registered http handler functions on the basis of the
+    incoming httpMethod.
     All responses are formatted using the lambdarest.Response class.
 
     Inner_handler:
     Is the decorator function used to register funtions as handlers of
     different http methods.
-    The inner_handler is also able to validate incomming data using a specified
+    The inner_handler is also able to validate incoming data using a specified
     JSON schema, please see http://json-schema.org for info.
 
     """
@@ -95,7 +91,7 @@ def create_lambda_handler():
                         body, status_code, headers = response + (None,) * (
                             3 - response_len)
 
-                    else:  # if response is string, dict, etc,
+                    else:  # if response is string, dict, etc.
                         body = response
                     response = Response(body, status_code, headers)
                 return response.to_json()
