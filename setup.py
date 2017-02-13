@@ -27,7 +27,7 @@ test_requirements = [
 
 setup(
     name='lambdarest',
-    version='0.0.6',
+    version='0.0.7',
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + '\n\n' + history,
     author="jgv",
