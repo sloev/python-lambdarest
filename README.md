@@ -1,17 +1,19 @@
 [![Build Status](http://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![pypi](https://badge.fury.io/py/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
 
-# Lambdarest - python pico framework for AWS lambda
+# lambdarest
 
-Pico framework for AWS lambda with optional JSON-schema validation.
+Python pico framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
 ###Includes:###
-* lambda_handler function constructor with builtin dispatcher
-* decorator to register functions to handle http-methods
+
+* `lambda_handler` function constructor with built-in dispatcher
+* decorator to register functions to handle HTTP methods
 * optional JSON-schema input validation using same decorator
 
-## install
+## Install
 
 ###Python versions###
+
 Tested on 2.7, 3.3, 3.4, 3.5
 see `tox.ini` for more info.
 
