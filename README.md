@@ -16,7 +16,7 @@ Python pico framework for [AWS Lambda](https://aws.amazon.com/lambda/) with opti
 
 Tested on 2.7, 3.3, 3.4, 3.5. See [`tox.ini`](tox.ini) for more info.
 
-###dependencies###
+###Dependencies###
 
 Requires the following dependencies (will be installed automatically):
 
@@ -39,15 +39,15 @@ pip install git+https://github.com/trustpilot/python-lambdarest.git
 
 or
 
-```
+```bash
 git clone https://github.com/trustpilot/python-lambdarest.git
 cd python-lambdarest
 sudo python setup.py install
 ```
 
 ## Usage
-This module gives you the option of using different functions to handle
-different http methods.
+
+This module gives you the option of using different functions to handle different HTTP methods.
 
 ```python
 from lambdarest import create_lambda_handler
@@ -66,7 +66,8 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-Optionally you can also validate incomming json body with JSON schemas
+Optionally you can also validate incomming JSON body with JSON schemas
+
 ```python
 from lambdarest import create_lambda_handler
 
@@ -103,16 +104,12 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ```
 
 ## Tests
-* Use pytest to run tests with current python version.
-* Use tox or the builtin `test-all` make target to run tests for all platforms
+
+* Use pytest to run tests with the current python version.
+* Use tox or the built-in `test-all` make target to run tests for all platforms.
 
 ```
 $ make test-all
 ```
-dependencies for tests: see requirements_dev.txt
 
-
-## Contributions
-
-* use github issues for bugs/requests
-* PR's welcome, will be code reviewed
+See [`requirements_dev.txt`](requirements_dev.txt) for test dependencies.
