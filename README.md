@@ -1,53 +1,26 @@
-[![Build Status](http://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![pypi](https://badge.fury.io/py/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
-
 # lambdarest
+
+[![Build Status](http://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest)  [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
 
 Python pico framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
-###Includes###
+### Features
 
 * `lambda_handler` function constructor with built-in dispatcher
 * Decorator to register functions to handle HTTP methods
 * Optional JSON-schema input validation using same decorator
 
-## Install
+## Installation
 
-###Python versions###
-
-Tested on 2.7, 3.3, 3.4, 3.5. See [`tox.ini`](tox.ini) for more info.
-
-###Dependencies###
-
-Requires the following dependencies (will be installed automatically):
-
-```
-jsonschema>=2.5.1
-strict-rfc3339>=0.7
-```
-
-###Install from pypi###
+Install the package from [PyPI](http://pypi.python.org/pypi/) using [pip](https://pip.pypa.io/):
 
 ```bash
 pip install lambdarest
 ```
 
-###Install from git###
+## Getting Started
 
-```bash
-pip install git+https://github.com/trustpilot/python-lambdarest.git
-```
-
-or
-
-```bash
-git clone https://github.com/trustpilot/python-lambdarest.git
-cd python-lambdarest
-sudo python setup.py install
-```
-
-## Usage
-
-This module gives you the option of using different functions to handle different HTTP methods.
+This module helps you to handle different HTTP methods in your AWS Lambda.
 
 ```python
 from lambdarest import create_lambda_handler
@@ -66,7 +39,7 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-Optionally you can also validate incoming JSON body with JSON schemas:
+Optionally you can validate an incoming JSON body against a JSON schema:
 
 ```python
 from lambdarest import create_lambda_handler
@@ -108,7 +81,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 You can use pytest to run tests against your current Python version. To run tests for all platforms, use tox or the built-in `test-all` Make target:
 
 ```
-$ make test-all
+make test-all
 ```
 
 See [`requirements_dev.txt`](requirements_dev.txt) for test dependencies.
