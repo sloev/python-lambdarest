@@ -20,7 +20,7 @@ pip install lambdarest
 
 ## Getting Started
 
-This module gives you the option of using different functions to handle different HTTP methods.
+This module helps you to handle different HTTP methods in your AWS Lambda.
 
 ```python
 from lambdarest import create_lambda_handler
@@ -39,7 +39,7 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
-Optionally you can also validate incoming JSON body with JSON schemas:
+Optionally you can validate an incoming JSON body against a JSON schema:
 
 ```python
 from lambdarest import create_lambda_handler
@@ -81,7 +81,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 You can use pytest to run tests against your current Python version. To run tests for all platforms, use tox or the built-in `test-all` Make target:
 
 ```
-$ make test-all
+make test-all
 ```
 
 See [`requirements_dev.txt`](requirements_dev.txt) for test dependencies.
