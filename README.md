@@ -31,6 +31,10 @@ lambda_handler = create_lambda_handler()
 def my_own_get(event):
     return {"this": "will be json dumped"}
 
+
+##### TEST #####
+
+
 input_event = {
     "body": '{}',
     "httpMethod": "GET"
@@ -40,6 +44,7 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 ```
 
 Optionally you can validate an incoming JSON body against a JSON schema:
+
 
 ```python
 from lambdarest import create_lambda_handler
@@ -59,6 +64,10 @@ my_schema = {
 @lambda_handler.handle("get", schema=my_schema)
 def my_own_get(event):
     return {"this": "will be json dumped"}
+
+
+##### TEST #####
+
 
 valid_input_event = {
     "body": '{"foo":"bar"}',
