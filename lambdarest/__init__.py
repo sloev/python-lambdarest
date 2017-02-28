@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 import json
@@ -11,7 +11,8 @@ import logging
 from jsonschema import validate, ValidationError, FormatChecker
 
 
-validate_kwargs = {"format_checker": FormatChecker()}
+__validate_kwargs = {"format_checker": FormatChecker()}
+__required_keys = ["httpMethod"]
 
 
 class Response:
@@ -60,15 +61,21 @@ def create_lambda_handler():
     http_methods = {}
 
     def inner_lambda_handler(event, context=None):
+        # check if running as "aws lambda proxy"
+        if not isinstance(event, dict) or not all(
+                        key in event for key in __required_keys):
+            message = "Bad request, maybe not using Lambda Proxy?"
+            logging.error(message)
+            return Response(message, 500).to_json()
+
         # Save context within event for easy access
         event["context"] = context
         method_name = event["httpMethod"].lower()
         func = None
-        error_tuple = ("[Error", 500)
+        error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
             func = http_methods[method_name]
-
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
@@ -87,7 +94,7 @@ def create_lambda_handler():
                             raise ValueError(
                                 "Response tuple has more than 3 items")
 
-                        # Unpack the tuple, missing items will be defaulted to None
+                        # Unpack the tuple, missing items will be defaulted
                         body, status_code, headers = response + (None,) * (
                             3 - response_len)
 
@@ -123,7 +130,7 @@ def create_lambda_handler():
                     event["json"] = json_data
                     if schema:
                         # jsonschema.validate using given schema
-                        validate(json_data, schema, **validate_kwargs)
+                        validate(json_data, schema, **__validate_kwargs)
                 return func(event, *args, **kwargs)
 
             # register http handler function
