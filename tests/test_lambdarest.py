@@ -155,3 +155,19 @@ class TestLambdarestFunctions(unittest.TestCase):
             post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         assert result == {"body": '"Validation Error"', "statusCode": 400, "headers": {}}
+
+    def test_that_it_returns_bad_request_if_not_given_lambda_proxy_input(self):
+        json_body = dict(
+            my_integer="this is not an integer",
+        )
+
+        event = json.dumps(json_body)
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(
+            post_mock)  # decorate mock
+        result = self.lambda_handler(event, self.context)
+        assert result == {
+            "body": '"Bad request, maybe not using Lambda Proxy?"',
+            "statusCode": 500,
+            "headers": {}}
