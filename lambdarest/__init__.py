@@ -35,6 +35,15 @@ class Response:
             "headers": self.headers or {}
         }
 
+def __json_load_query(query):
+    query = query or {}
+    for key, value in query.items():
+        try:
+            query[key] = json.loads(value)
+        except:
+            continue
+    return query
+
 
 def create_lambda_handler():
     """Create a lambda handler function with `handle` decorator as attribute
@@ -126,7 +135,11 @@ def create_lambda_handler():
         def wrapper(func):
             def inner(event, *args, **kwargs):
                 if load_json:
-                    json_data = json.loads(event["body"])
+                    json_data = {
+                        "body": json.loads(event["body"]),
+                        "query": __json_load_query(
+                        event["queryStringParameters"])
+                    }
                     event["json"] = json_data
                     if schema:
                         # jsonschema.validate using given schema
