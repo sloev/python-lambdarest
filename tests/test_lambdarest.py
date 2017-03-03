@@ -90,7 +90,10 @@ class TestLambdarestFunctions(unittest.TestCase):
         # create deep copy for testing purposes, self.event is mutable
         assert_event = copy.deepcopy(self.event)
         assert_event["context"] = self.context
-        assert_event["json"] = json_body
+        assert_event["json"] = dict(
+            body=json_body,
+            query={}
+        )
 
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
@@ -122,8 +125,10 @@ class TestLambdarestFunctions(unittest.TestCase):
         # create deep copy for testing purposes, self.event is mutable
         assert_event = copy.deepcopy(self.event)
         assert_event["context"] = self.context
-        assert_event["json"] = json_body
-
+        assert_event["json"] = dict(
+            body=json_body,
+            query={}
+        )
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post" , schema=post_schema)(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
@@ -138,8 +143,13 @@ class TestLambdarestFunctions(unittest.TestCase):
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
             "properties": {
-                "my_integer": {
-                    "type": "integer"
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "my_integer": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         }
@@ -148,8 +158,10 @@ class TestLambdarestFunctions(unittest.TestCase):
         # create deep copy for testing purposes, self.event is mutable
         assert_event = copy.deepcopy(self.event)
         assert_event["context"] = self.context
-        assert_event["json"] = json_body
-
+        assert_event["json"] = dict(
+            body=json_body,
+            query={}
+        )
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post", schema=post_schema)(
             post_mock)  # decorate mock
@@ -164,10 +176,50 @@ class TestLambdarestFunctions(unittest.TestCase):
         event = json.dumps(json_body)
 
         post_mock = mock.Mock(return_value="foo")
-        self.lambda_handler.handle("post")(
-            post_mock)  # decorate mock
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(event, self.context)
         assert result == {
             "body": '"Bad request, maybe not using Lambda Proxy?"',
             "statusCode": 500,
             "headers": {}}
+
+
+    def test_that_it_unpacks_and_validates_query_params(self):
+        json_body = dict(
+            my_integer="this is not an integer",
+        )
+        queryStringParameters = dict(
+            foo='"keys"',
+            bar="{\"baz\":20}"
+        )
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["queryStringParameters"] = queryStringParameters
+
+        def side_effect(event):
+            return "foobar"
+        post_mock = mock.MagicMock(side_effect=side_effect)
+
+        post_schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "query": {  # here we adress the unpacked query params
+                    "type": "object",
+                    "properties": {
+                        "foo": {
+                            "type": "string"
+                        },
+                        "bar": {
+                            "type": "object",
+                            "properties": {
+                                "baz": {"type": "number"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        self.lambda_handler.handle("post", schema=post_schema)(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        assert result == {"body": '"foobar"', "statusCode": 200, "headers": {}}
