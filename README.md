@@ -55,8 +55,13 @@ my_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
-        "foo": {
-            "type": "string"
+        "body":{
+            "type": "object",
+            "properties": {
+                "foo": {
+                    "type": "string"
+                }
+            }
         }
     }
 }
@@ -79,7 +84,7 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 
 invalid_input_event = {
     "body": '{"foo":666}',
-    "httpMethod": "GET"
+    "httpMethod": "GET",
 }
 result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}

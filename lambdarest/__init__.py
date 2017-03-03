@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '1.0.2'
+__version__ = '2.0.0'
 
 
 import json
@@ -34,6 +34,15 @@ class Response:
             "statusCode": self.status_code or 200,
             "headers": self.headers or {}
         }
+
+def __json_load_query(query):
+    query = query or {}
+    for key, value in query.items():
+        try:
+            query[key] = json.loads(value)
+        except:
+            continue
+    return query
 
 
 def create_lambda_handler():
@@ -126,7 +135,11 @@ def create_lambda_handler():
         def wrapper(func):
             def inner(event, *args, **kwargs):
                 if load_json:
-                    json_data = json.loads(event["body"])
+                    json_data = {
+                        "body": json.loads(event.get("body", {})),
+                        "query": __json_load_query(
+                        event.get("queryStringParameters"))
+                    }
                     event["json"] = json_data
                     if schema:
                         # jsonschema.validate using given schema
