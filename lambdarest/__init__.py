@@ -136,9 +136,9 @@ def create_lambda_handler():
             def inner(event, *args, **kwargs):
                 if load_json:
                     json_data = {
-                        "body": json.loads(event["body"]),
+                        "body": json.loads(event.get("body", {})),
                         "query": __json_load_query(
-                        event["queryStringParameters"])
+                        event.get("queryStringParameters"))
                     }
                     event["json"] = json_data
                     if schema:
