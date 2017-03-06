@@ -236,7 +236,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         assert result == {"body": '"foobar"', "statusCode": 200, "headers": {}}
 
 
-    def test_that_it_wors_without_body_or_queryStringParameters(self):
+    def test_that_it_works_without_body_or_queryStringParameters(self):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
