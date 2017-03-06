@@ -50,7 +50,7 @@ def __marshall_query_params(value):
     except:
         value_cand = value.split(",")
         if len(value_cand) > 1:
-            value = map(__float_cast, value_cand)
+            value = list(map(__float_cast, value_cand))
     return value
 
 
