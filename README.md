@@ -43,6 +43,8 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
+## Advanced Usage
+
 Optionally you can validate an incoming JSON body against a JSON schema:
 
 
@@ -88,6 +90,51 @@ invalid_input_event = {
 }
 result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
+```
+
+### Query Params
+Query params are also analyzed and validatable with JSON schemas.
+Query arrays are expected to be comma seperated, all numbers are converted to floats.
+
+```python
+from lambdarest import create_lambda_handler
+
+lambda_handler = create_lambda_handler()
+
+my_schema = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "query":{
+            "type": "object",
+            "properties": {
+                "foo": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        }
+    }
+}
+
+@lambda_handler.handle("get", schema=my_schema)
+def my_own_get(event):
+    return event["json"]["query"]
+
+
+##### TEST #####
+
+
+valid_input_event = {
+    "queryStringParameters": {
+        "foo": "1, 2.2, 3"
+    },
+    "httpMethod": "GET"
+}
+result = lambda_handler(event=valid_input_event)
+assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
 ```
 
 ## Tests

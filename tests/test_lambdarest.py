@@ -190,7 +190,9 @@ class TestLambdarestFunctions(unittest.TestCase):
         )
         queryStringParameters = dict(
             foo='"keys"',
-            bar="{\"baz\":20}"
+            bar="{\"baz\":20}",
+            baz='1,2,3',
+            apples="1"
         )
 
         self.event["body"] = json.dumps(json_body)
@@ -215,6 +217,15 @@ class TestLambdarestFunctions(unittest.TestCase):
                             "properties": {
                                 "baz": {"type": "number"}
                             }
+                        },
+                        "baz": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        },
+                        "apples": {
+                            "type": "number"
                         }
                     }
                 }
@@ -223,3 +234,10 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("post", schema=post_schema)(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         assert result == {"body": '"foobar"', "statusCode": 200, "headers": {}}
+
+
+    def test_that_it_wors_without_body_or_queryStringParameters(self):
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        assert result == {'body': '"foo"', 'headers': {}, 'statusCode': 200}
