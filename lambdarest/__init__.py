@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '2.0.1'
+__version__ = '2.1.0'
 
 
 import json
@@ -35,14 +35,30 @@ class Response:
             "headers": self.headers or {}
         }
 
+
+def __float_cast(value):
+    try:
+        return float(value)
+    except:
+        pass
+    return value
+
+
+def __marshall_query_params(value):
+    try:
+        value = json.loads(value)
+    except:
+        value_cand = value.split(",")
+        if len(value_cand) > 1:
+            value = list(map(__float_cast, value_cand))
+    return value
+
+
 def __json_load_query(query):
     query = query or {}
-    for key, value in query.items():
-        try:
-            query[key] = json.loads(value)
-        except:
-            continue
-    return query
+
+    return {key: __marshall_query_params(value)
+            for key,value in query.items()}
 
 
 def create_lambda_handler():
@@ -136,7 +152,7 @@ def create_lambda_handler():
             def inner(event, *args, **kwargs):
                 if load_json:
                     json_data = {
-                        "body": json.loads(event.get("body", {})),
+                        "body": json.loads(event.get("body") or "{}"),
                         "query": __json_load_query(
                         event.get("queryStringParameters"))
                     }
