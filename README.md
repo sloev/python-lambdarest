@@ -46,7 +46,6 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 
 Optionally you can validate an incoming JSON body against a JSON schema:
 
-
 ```python
 from lambdarest import lambda_handler
 
@@ -92,6 +91,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ```
 
 ### Query Params
+
 Query params are also analyzed and validatable with JSON schemas.
 Query arrays are expected to be comma seperated, all numbers are converted to floats.
 
@@ -137,7 +137,7 @@ assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "header
 
 ### Routing
 
-You can also specify which path to react on for individual handlers using the the `path` param:
+You can also specify which path to react on for individual handlers using the `path` param:
 
 ```python
 from lambdarest import lambda_handler
