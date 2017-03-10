@@ -143,7 +143,7 @@ def create_lambda_handler():
         body, status_code = error_tuple
         return Response(body, status_code).to_json()
 
-    def inner_handler(method_name, schema=None, load_json=True):
+    def inner_handler(method_name, path="/", schema=None, load_json=True):
         if schema and not load_json:
             raise ValueError(
                 "if schema is supplied, load_json needs to be true")
@@ -163,10 +163,13 @@ def create_lambda_handler():
                 return func(event, *args, **kwargs)
 
             # register http handler function
-            http_methods[method_name] = inner
+            http_methods.setdefault(path.lower(), {})[method_name.lower()] = inner
             return inner
         return wrapper
 
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
     return lambda_handler
+
+# singleton
+lambda_handler = create_lambda_handler()

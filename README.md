@@ -23,9 +23,7 @@ pip install lambdarest
 This module helps you to handle different HTTP methods in your AWS Lambda.
 
 ```python
-from lambdarest import create_lambda_handler
-
-lambda_handler = create_lambda_handler()
+from lambdarest import lambda_handler
 
 @lambda_handler.handle("get")
 def my_own_get(event):
@@ -37,7 +35,8 @@ def my_own_get(event):
 
 input_event = {
     "body": '{}',
-    "httpMethod": "GET"
+    "httpMethod": "GET",
+    "path": "/"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -49,9 +48,7 @@ Optionally you can validate an incoming JSON body against a JSON schema:
 
 
 ```python
-from lambdarest import create_lambda_handler
-
-lambda_handler = create_lambda_handler()
+from lambdarest import lambda_handler
 
 my_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
@@ -78,7 +75,8 @@ def my_own_get(event):
 
 valid_input_event = {
     "body": '{"foo":"bar"}',
-    "httpMethod": "GET"
+    "httpMethod": "GET",
+    "path": "/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -87,6 +85,7 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 invalid_input_event = {
     "body": '{"foo":666}',
     "httpMethod": "GET",
+    "path": "/"
 }
 result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
@@ -97,9 +96,7 @@ Query params are also analyzed and validatable with JSON schemas.
 Query arrays are expected to be comma seperated, all numbers are converted to floats.
 
 ```python
-from lambdarest import create_lambda_handler
-
-lambda_handler = create_lambda_handler()
+from lambdarest import lambda_handler
 
 my_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
@@ -131,10 +128,35 @@ valid_input_event = {
     "queryStringParameters": {
         "foo": "1, 2.2, 3"
     },
-    "httpMethod": "GET"
+    "httpMethod": "GET",
+    "path": "/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
+```
+
+### Routing
+
+You can also specify which path to react on for individual handlers using the the `path` param:
+
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/foo/bar/baz")
+def my_own_get(event):
+    return {"this": "will be json dumped"}
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "path": "/foo/bar/baz"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
 ## Tests
