@@ -20,7 +20,7 @@ class TestLambdarestFunctions(unittest.TestCase):
     def setUp(self):
         self.event = {
           "resource": "/test",
-          "path": "/test",
+          "path": "/",
           "httpMethod": "POST",
           "headers": None,
           "queryStringParameters": None,
@@ -241,3 +241,29 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         assert result == {'body': '"foo"', 'headers': {}, 'statusCode': 200}
+
+    def test_that_specified_path_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+
+        get_mock1 = mock.Mock(return_value="foo")
+        get_mock2 = mock.Mock(return_value="bar")
+
+        self.lambda_handler.handle("get", path="/foo/bar")(get_mock1)  # decorate mock
+        self.lambda_handler.handle("get", path="/bar/foo")(get_mock2)  # decorate mock
+
+        self.event["path"] = "/foo/bar"
+        result1 = self.lambda_handler(self.event, self.context)
+        assert result1 == {
+            "body": '"foo"',
+            "statusCode": 200,
+            "headers": {}}
+
+        self.event["path"] = "/bar/foo"
+        result2 = self.lambda_handler(self.event, self.context)
+        assert result2 == {
+            "body": '"bar"',
+            "statusCode": 200,
+            "headers": {}}

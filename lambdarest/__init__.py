@@ -12,7 +12,7 @@ from jsonschema import validate, ValidationError, FormatChecker
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
-__required_keys = ["httpMethod"]
+__required_keys = ["httpMethod", "path"]
 
 
 class Response:
@@ -95,12 +95,13 @@ def create_lambda_handler():
 
         # Save context within event for easy access
         event["context"] = context
+        path = event["path"].lower()
         method_name = event["httpMethod"].lower()
         func = None
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            func = http_methods[method_name]
+            func = http_methods[path][method_name]
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
