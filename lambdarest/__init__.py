@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '2.1.0'
+__version__ = '2.2.0'
 
 
 import json
@@ -12,7 +12,7 @@ from jsonschema import validate, ValidationError, FormatChecker
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
-__required_keys = ["httpMethod"]
+__required_keys = ["httpMethod", "path"]
 
 
 class Response:
@@ -95,12 +95,13 @@ def create_lambda_handler():
 
         # Save context within event for easy access
         event["context"] = context
+        path = event["path"].lower()
         method_name = event["httpMethod"].lower()
         func = None
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            func = http_methods[method_name]
+            func = http_methods[path][method_name]
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
@@ -143,7 +144,7 @@ def create_lambda_handler():
         body, status_code = error_tuple
         return Response(body, status_code).to_json()
 
-    def inner_handler(method_name, schema=None, load_json=True):
+    def inner_handler(method_name, path="/", schema=None, load_json=True):
         if schema and not load_json:
             raise ValueError(
                 "if schema is supplied, load_json needs to be true")
@@ -163,10 +164,13 @@ def create_lambda_handler():
                 return func(event, *args, **kwargs)
 
             # register http handler function
-            http_methods[method_name] = inner
+            http_methods.setdefault(path.lower(), {})[method_name.lower()] = inner
             return inner
         return wrapper
 
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
     return lambda_handler
+
+# singleton
+lambda_handler = create_lambda_handler()
