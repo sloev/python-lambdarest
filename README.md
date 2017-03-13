@@ -159,6 +159,10 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
+## Anormal unittest behaviour with `lambda_handler` singleton
+
+Because of python unittests leaky test-cases it seems like you shall beware of [this issue](https://github.com/trustpilot/python-lambdarest/issues/16) when using the singleton `lambda_handler` in a multiple test-case scenario.
+
 ## Tests
 
 You can use pytest to run tests against your current Python version. To run tests for all platforms, use tox or the built-in `test-all` Make target:
