@@ -22,12 +22,24 @@ requirements = [
 ]
 
 test_requirements = [
-    'mock',
-]
+    'flake8==2.6.0',
+    'coverage==4.1',
+    'PyYAML==3.11',
+    'pytest==2.9.2',
+    'mock>=2.0.0',
+    'pytest-readme>=1.0.0',
+    'prospector>=0.12.5',
+    'jsonschema>=2.5.1',
+    'strict_rfc3339>=0.7'
+] + requirements
+
+extras = {
+    'test': test_requirements
+}
 
 setup(
     name='lambdarest',
-    version='2.2.0',
+    version='2.2.4',
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + '\n\n' + history,
     author="jgv",
@@ -50,5 +62,6 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    tests_require=test_requirements,
+    extras_require=extras
 )
