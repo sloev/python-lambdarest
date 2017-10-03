@@ -1,19 +1,47 @@
 sudo: required
-
 language: python
-
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
 install:
-  - pip install tox
-  - pip install tox-travis
-
+- pip install tox==2.3.1
+- pip install tox-travis==0.8
 script:
-  - tox
-
+- tox
 branches:
   only: master
+
+after_success:
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- git tag -a v$(python setup.py --version) -m "Travis build $TRAVIS_BUILD_NUMBER pushed
+  a tag."
+- git push origin --tags
+- git fetch origin
+
+deploy:
+  - provider: pypi
+    skip_cleanup: true
+    distributions: sdist
+    user: "trustpilot"
+    password:
+      secure: OPtkwNMkxT6mIXPHtvFfdXBHQhyzjYk9s4VYeH4Lo2/3CjHT1r1xvPHn6r6b9B8Lwsj/pn34oezIXhZRaq+w3+Gw31BqhLOGzsvqTsm3FC5hHkJC5NqnPR603tboJQLp3HehhRs6qBSQEcYwiPCiFfJKyQJBi2UIQRg4B2Kv708Eecg1p3PNFB7sjzS1oFPAtjGvu2oCkAYqEdUOyhLXkEJmbpTg2zVKUM2g6Ag+WbwAwTCvFqJwxRL3QIiZBPSKmRJGT/C+DpJAIMJi4YjNxHGjdcJ6ZLkopO+eTS1I3R4HLeEs+tDfRt8JUqz0XdrV20cjKoLHtn3+U0y/oz45eqiUEBGvhYKAsxJDvdla2wsCwnfFucgCeE7old0ByC9lIQ7KY0ZrZeM/22oR//sJkoolwbjdFfUnnYAIhWMxsLOFIL9hXHEG8OU+J+BfbcWbWwDoTPJdpwtBon8pMnhBdqMkoOammDrDDwIdNXHIWr4huujHc0A+WWa9iL2S1S4p7/H7bAIDvMmdiLx0eSwWYqCimtBi0iNGUOm0KoZOS9dugceA0On70k9dGSCbZ128VWkyveopsqkJY4yQ0z7Hhe2VaTpWF4d23iTYOAR4rnivBfJ7I1D9ByVD8DNLz7PSA61PATH2307bVScVQap/FdpqwO4scepD9/Y/D0y3qvY=
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-lambdarest
+      condition: $TRAVIS_PYTHON_VERSION = "2.7"
+  - provider: releases
+    skip_cleanup: true
+    api-key:
+      secure: C/0JgRfwaHyRdmHL3Soxo5xVuMiJFxG9MkuquElqvtBuO+Lwm+3NW0vDuGI53tHgcMHFbegzkI3bh2xFj284BgmL42oCUImpmoFZnx3TlYTCP+ya64Y2uyNjFLHOC2Vtfuhd8mM1+E8e8w1q01YpS3HmpX1wUz4OGewfhqWrBh0JdqxE5p96RaY45BEXClzjz4SQF0+TnRKyHP4w22U1AnG8w5TEZWGztWxc1/aTPh+hnLM3e9JudlOXJfM8WYR1oNHmmlM2HyWN2NJoLke98X8L0PfavDqAOU1xd3fIpLXUun6fXLQ/hQOL22xo9lK0oAB+fzoJ94lObL0xCZu0VuqUZ9HWkQkhgkleqTj+ClE+5jZ+RkjLklTBAcvsBtj9nhjkt5WDD1UsE+n3ILMtwrWz+g1Gv9HDB1eg2PIzQsFfYuYh6cUbgb0O/bZ8TQ3mClJt0yThwJe5DFvKEvciF1dH/Wy4bFgr90E0XfJc4HESJAfqnEmDLCS9IQNmEPC/e79skAECv11jp7hzGBTkXPUpbIlUPqxYpqq3Js2e1b2OWjVuTFH7yTHfyjkoNbAxV4Uy1gRj6/hfWM5G9QfopYELWYDpQ07O16t2tPQuG4uqWBDmgWX3JwRZDn7jRx9pl7MrHVsi/Dm7+atsNc4jhJbx+wbaAKSdbHKiso552Vk=
+    file_glob: true
+    file: dist/*
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-lambdarest
+      condition: $TRAVIS_PYTHON_VERSION = "2.7"
+

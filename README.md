@@ -171,4 +171,4 @@ You can use pytest to run tests against your current Python version. To run test
 make test-all
 ```
 
-See [`requirements_dev.txt`](requirements_dev.txt) for test dependencies.
+See [`setup.py`](setup.py) for test dependencies.
