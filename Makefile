@@ -52,7 +52,10 @@ lint: ## check style with flake8
 	flake8 python_simple_trustpilo_api_client tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	rm -rf .tox && tox -e py27
+	rm -rf .tox && tox -e py33
+	rm -rf .tox && tox -e py34
+	rm -rf .tox && tox -e py35
 
 test-all: clean ## run all versions/tests with dtox (dockerized)
 	@echo "Running all tests in Docker using dtox"
