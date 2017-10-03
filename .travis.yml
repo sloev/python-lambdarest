@@ -12,3 +12,35 @@ script:
 - tox
 branches:
   only: master
+
+after_success:
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- git tag -a v$(python setup.py --version) -m "Travis build $TRAVIS_BUILD_NUMBER pushed
+  a tag."
+- git push origin --tags
+- git fetch origin
+
+deploy:
+  - provider: pypi
+    skip_cleanup: true
+    distributions: sdist
+    user: "trustpilot"
+    password:
+      secure: OPtkwNMkxT6mIXPHtvFfdXBHQhyzjYk9s4VYeH4Lo2/3CjHT1r1xvPHn6r6b9B8Lwsj/pn34oezIXhZRaq+w3+Gw31BqhLOGzsvqTsm3FC5hHkJC5NqnPR603tboJQLp3HehhRs6qBSQEcYwiPCiFfJKyQJBi2UIQRg4B2Kv708Eecg1p3PNFB7sjzS1oFPAtjGvu2oCkAYqEdUOyhLXkEJmbpTg2zVKUM2g6Ag+WbwAwTCvFqJwxRL3QIiZBPSKmRJGT/C+DpJAIMJi4YjNxHGjdcJ6ZLkopO+eTS1I3R4HLeEs+tDfRt8JUqz0XdrV20cjKoLHtn3+U0y/oz45eqiUEBGvhYKAsxJDvdla2wsCwnfFucgCeE7old0ByC9lIQ7KY0ZrZeM/22oR//sJkoolwbjdFfUnnYAIhWMxsLOFIL9hXHEG8OU+J+BfbcWbWwDoTPJdpwtBon8pMnhBdqMkoOammDrDDwIdNXHIWr4huujHc0A+WWa9iL2S1S4p7/H7bAIDvMmdiLx0eSwWYqCimtBi0iNGUOm0KoZOS9dugceA0On70k9dGSCbZ128VWkyveopsqkJY4yQ0z7Hhe2VaTpWF4d23iTYOAR4rnivBfJ7I1D9ByVD8DNLz7PSA61PATH2307bVScVQap/FdpqwO4scepD9/Y/D0y3qvY=
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-lambdarest
+      condition: $TRAVIS_PYTHON_VERSION = "2.7"
+  - provider: releases
+    skip_cleanup: true
+    api-key:
+      secure: wcVkEgI11nGpbH718iU2SOFEa/rvw/U8GlyH5WhJEjJBUUhdAUfIc4tPUFkhXG6OfGHAQu8FU1YX3+lIUGsaYg75kkkk5+98XmrWgkV2KVoYqiVMQRjzSOKkeXUEeWb7vrK4fVd2R6O1hZ5ph2lE5ybsjvTvbU52ONHVuqNkGsHcO4EyTO+uqwGFLLK+O9OJUksChO/TK53bsE6kH80ShvGxC8p8xNXQ99P9mSjN1i7Qi947xIHh0haHHBczqjBR3dm9sGpl31dDM444mQH87E7D/TkoMNl37UcDqrK6aCmhw/H2Fd8njwMp1ERZev9/oBtWqbBZaWfrayyNe/TigUvJTjh+5VYCbP7GVXGhTKS/vegNcxkqgLVR4Gd7fLYy9tYKIZ2MAp2Y34aK4HTWXdiRDlo1etalRykpoB3xcOH7gEDeG5oGSYvDsqWCm1Z0Sc6hci01sM+2CvhLMvmi5NQpnoVcmnqOnU003G0SV9kxtcKS8+3NbJkMpp9aML5Lpg6J9ID2sXoONvuFcjjmbm3zBF685qIzTGGSHXy1jcsZOflnCItbGxXlkSzy/OTxyiCdNEED5PEqKHeA5rtzx8lE29IRzk9++uJzRPFjwRsSEJkAl/ft4Bin3rd/0Qz8PuNh5qXuIWXKYIRtfHFlQVhSYD9dS43uVJEPKdz75qk=
+    file_glob: true
+    file: dist/*
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-lambdarest
+      condition: $TRAVIS_PYTHON_VERSION = "2.7"

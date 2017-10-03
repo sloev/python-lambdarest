@@ -15,7 +15,7 @@ __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod", "path"]
 
 
-class Response:
+class Response(object):
     """Class to conceptualize a response with default attributes
 
     if no body is specified, empty string is returned
