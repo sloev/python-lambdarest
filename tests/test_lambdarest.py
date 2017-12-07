@@ -6,6 +6,8 @@ except ImportError:
 import unittest
 import json
 import copy
+import random
+from datetime import datetime
 
 from lambdarest import create_lambda_handler
 
@@ -267,3 +269,26 @@ class TestLambdarestFunctions(unittest.TestCase):
             "body": '"bar"',
             "statusCode": 200,
             "headers": {}}
+
+    def test_that_no_path_specified_match_all(self):
+        random.seed(datetime.now().timestamp())
+
+        json_body = {}
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "PUT"
+
+        get_mock = mock.Mock(return_value="foo")
+
+        self.lambda_handler.handle("put", path="*")(get_mock)
+
+        r = range(1000)
+        for i in range(10):
+            # test with a non-deterministic path
+            self.event["path"] = "/foo/{}".format(random.choice(r))
+            print(self.event["path"])
+            result = self.lambda_handler(self.event, self.context)
+            assert result == {
+                "body": '"foo"',
+                "statusCode": 200,
+                "headers": {}
+            }
