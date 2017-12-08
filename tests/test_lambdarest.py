@@ -8,6 +8,7 @@ import json
 import copy
 import random
 from datetime import datetime
+import time
 
 from lambdarest import create_lambda_handler
 
@@ -271,7 +272,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "headers": {}}
 
     def test_that_no_path_specified_match_all(self):
-        random.seed(datetime.now().timestamp())
+        random.seed(time.mktime(datetime.now().timetuple()))
 
         json_body = {}
         self.event["body"] = json.dumps(json_body)
