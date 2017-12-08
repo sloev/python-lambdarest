@@ -93,7 +93,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ### Query Params
 
 Query params are also analyzed and validatable with JSON schemas.
-Query arrays are expected to be comma seperated, all numbers are converted to floats.
+Query arrays are expected to be comma separated, all numbers are converted to floats.
 
 ```python
 from lambdarest import lambda_handler
