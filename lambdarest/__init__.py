@@ -101,7 +101,7 @@ def create_lambda_handler():
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            func = http_methods.get(path, http_methods.get("*", {}))[method_name]
+            func = http_methods[path][method_name]
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
