@@ -285,7 +285,6 @@ class TestLambdarestFunctions(unittest.TestCase):
         for i in range(10):
             # test with a non-deterministic path
             self.event["path"] = "/foo/{}".format(random.choice(r))
-            print(self.event["path"])
             result = self.lambda_handler(self.event, self.context)
             assert result == {
                 "body": '"foo"',
