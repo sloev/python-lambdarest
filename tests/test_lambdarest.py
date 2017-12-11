@@ -299,9 +299,10 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.event["httpMethod"] = "GET"
         self.event["path"] = "/foo/bar"
 
-        def divide_by_zero(event):
+        def divide_by_zero(_):
             return 1/0
 
+        self.lambda_handler = create_lambda_handler(error_handler=None)
         self.lambda_handler.handle("get", path="/foo/bar")(divide_by_zero)
 
         with self.assertRaises(ZeroDivisionError):
