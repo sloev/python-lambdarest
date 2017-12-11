@@ -140,6 +140,7 @@ def create_lambda_handler():
                 # no runtime exceptions are left unhandled
                 logging.exception(logging_message.format(
                     status_code=500, message=str(error)))
+                raise
 
         body, status_code = error_tuple
         return Response(body, status_code).to_json()
