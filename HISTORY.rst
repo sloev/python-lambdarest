@@ -38,3 +38,9 @@ First OSS release
 
 **features**
 - builds and deploys automatically using travis to pypi and github releases
+
+2.2.6 (2017-12-13)
++++++++++++++++++++
+
+**features**
+- An error handler can now be passed when creating a handler. Any unhandled error will be re-raise when None is passed

@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '2.2.5'
+__version__ = '2.2.6'
 
 
 import json
@@ -61,7 +61,15 @@ def __json_load_query(query):
             for key,value in query.items()}
 
 
-def create_lambda_handler():
+def default_error_handler(error, method):
+    logging_message = "[%s][{status_code}]: {message}" % method
+    logging.exception(logging_message.format(
+        status_code=500,
+        message=str(error)
+    ))
+
+
+def create_lambda_handler(error_handler=default_error_handler):
     """Create a lambda handler function with `handle` decorator as attribute
 
     example:
@@ -137,9 +145,10 @@ def create_lambda_handler():
                 error_tuple = ("Validation Error", 400)
 
             except Exception as error:
-                # no runtime exceptions are left unhandled
-                logging.exception(logging_message.format(
-                    status_code=500, message=str(error)))
+                if error_handler:
+                    error_handler(error, method_name)
+                else:
+                    raise
 
         body, status_code = error_tuple
         return Response(body, status_code).to_json()

@@ -292,3 +292,18 @@ class TestLambdarestFunctions(unittest.TestCase):
                 "statusCode": 200,
                 "headers": {}
             }
+
+    def test_exception_in_handler_should_be_reraised(self):
+        json_body = {}
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+        self.event["path"] = "/foo/bar"
+
+        def divide_by_zero(_):
+            return 1/0
+
+        self.lambda_handler = create_lambda_handler(error_handler=None)
+        self.lambda_handler.handle("get", path="/foo/bar")(divide_by_zero)
+
+        with self.assertRaises(ZeroDivisionError):
+            self.lambda_handler(self.event, self.context)
