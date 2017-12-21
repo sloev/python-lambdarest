@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '3.0.0'
+__version__ = '3.0.1'
 
 
 import json
@@ -30,7 +30,7 @@ class Response(object):
 
     def to_json(self):
         return {
-            "body": json.dumps(self.body or None),
+            "body": json.dumps(self.body) if self.body else None,
             "statusCode": self.status_code or 200,
             "headers": self.headers or {}
         }
