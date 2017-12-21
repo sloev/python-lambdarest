@@ -30,7 +30,7 @@ class Response(object):
 
     def to_json(self):
         return {
-            "body": json.dumps(self.body or ""),
+            "body": json.dumps(self.body or None),
             "statusCode": self.status_code or 200,
             "headers": self.headers or {}
         }
