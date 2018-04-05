@@ -39,7 +39,7 @@ class Response(object):
 def __float_cast(value):
     try:
         return float(value)
-    except:
+    except Exception:
         pass
     return value
 
@@ -47,7 +47,7 @@ def __float_cast(value):
 def __marshall_query_params(value):
     try:
         value = json.loads(value)
-    except:
+    except Exception:
         value_cand = value.split(",")
         if len(value_cand) > 1:
             value = list(map(__float_cast, value_cand))
@@ -58,7 +58,7 @@ def __json_load_query(query):
     query = query or {}
 
     return {key: __marshall_query_params(value)
-            for key,value in query.items()}
+            for key, value in query.items()}
 
 
 def default_error_handler(error, method):
