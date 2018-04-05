@@ -111,16 +111,13 @@ def create_lambda_handler(error_handler=default_error_handler):
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            mapping = url_maps.bind('example.com', '')
+            # bind the mapping to an empty server name
+            mapping = url_maps.bind('')
             func, kwargs = mapping.match(path, method=method_name)
         except NotFound as e:
             logging.warning(logging_message.format(
                 status_code=404, message=str(e)))
             error_tuple = (str(e), 404)
-        except KeyError:
-            logging.warning(logging_message.format(
-                status_code=405, message="Not supported"))
-            error_tuple = ("Not supported", 405)
 
         if func:
             try:
@@ -180,9 +177,7 @@ def create_lambda_handler(error_handler=default_error_handler):
                 return func(event, *args, **kwargs)
 
             # register http handler function
-            # url_maps.setdefault(path.lower(), {})[method_name.lower()] = inner
             rule = Rule(path, endpoint=inner, methods=[method_name.lower()])
-            print(rule)
             url_maps.add(rule)
             return inner
         return wrapper
