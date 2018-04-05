@@ -113,7 +113,12 @@ def create_lambda_handler(error_handler=default_error_handler):
         try:
             # bind the mapping to an empty server name
             mapping = url_maps.bind('')
-            func, kwargs = mapping.match(path, method=method_name)
+            rule, kwargs = mapping.match(path, method=method_name, return_rule=True)
+            func = rule.endpoint
+
+            # if this is a catch-all rule, don't send any kwargs
+            if rule.rule == "/<path:path>/":
+                kwargs = {}
         except NotFound as e:
             logging.warning(logging_message.format(
                 status_code=404, message=str(e)))
@@ -176,8 +181,13 @@ def create_lambda_handler(error_handler=default_error_handler):
                         validate(json_data, schema, **__validate_kwargs)
                 return func(event, *args, **kwargs)
 
+            # if this is a catch all url, make sure that it's setup correctly
+            target_path = path
+            if path == '*':
+                target_path = "/<path:path>/"
+
             # register http handler function
-            rule = Rule(path, endpoint=inner, methods=[method_name.lower()])
+            rule = Rule(target_path, endpoint=inner, methods=[method_name.lower()])
             url_maps.add(rule)
             return inner
         return wrapper
