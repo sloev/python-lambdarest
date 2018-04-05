@@ -175,7 +175,7 @@ def my_own_get(event, id):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "path": "/foo/1234"
+    "path": "/foo/1234/"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
