@@ -19,6 +19,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'jsonschema>=2.5.1',
     'strict_rfc3339>=0.7',
+    'werkzeug>=0.14.1'
 ]
 
 test_requirements = [
