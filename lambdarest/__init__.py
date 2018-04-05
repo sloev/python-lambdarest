@@ -9,6 +9,7 @@ __version__ = '3.0.1'
 import json
 import logging
 from jsonschema import validate, ValidationError, FormatChecker
+from werkzeug.routing import Map, Rule, NotFound
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
@@ -91,7 +92,7 @@ def create_lambda_handler(error_handler=default_error_handler):
     JSON schema, please see http://json-schema.org for info.
 
     """
-    http_methods = {}
+    url_maps = Map()
 
     def inner_lambda_handler(event, context=None):
         # check if running as "aws lambda proxy"
@@ -106,10 +107,16 @@ def create_lambda_handler(error_handler=default_error_handler):
         path = event["path"].lower()
         method_name = event["httpMethod"].lower()
         func = None
+        kwargs = {}
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            func = http_methods.get(path, http_methods.get("*", {}))[method_name]
+            mapping = url_maps.bind('example.com', '')
+            func, kwargs = mapping.match(path, method=method_name)
+        except NotFound as e:
+            logging.warning(logging_message.format(
+                status_code=404, message=str(e)))
+            error_tuple = (str(e), 404)
         except KeyError:
             logging.warning(logging_message.format(
                 status_code=405, message="Not supported"))
@@ -117,7 +124,7 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         if func:
             try:
-                response = func(event)
+                response = func(event, **kwargs)
                 if not isinstance(response, Response):
                     # Set defaults
                     status_code = headers = None
@@ -173,7 +180,10 @@ def create_lambda_handler(error_handler=default_error_handler):
                 return func(event, *args, **kwargs)
 
             # register http handler function
-            http_methods.setdefault(path.lower(), {})[method_name.lower()] = inner
+            # url_maps.setdefault(path.lower(), {})[method_name.lower()] = inner
+            rule = Rule(path, endpoint=inner, methods=[method_name.lower()])
+            print(rule)
+            url_maps.add(rule)
             return inner
         return wrapper
 
