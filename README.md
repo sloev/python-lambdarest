@@ -159,6 +159,29 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
+And you can specify path parameters as well, which will be passed as keyword arguments:
+
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/foo/<int:id>/<string:what>/")
+def my_own_get(event, id):
+    return {"my-id": id}
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "path": "/foo/1234"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
+```
+
+
 ## Anormal unittest behaviour with `lambda_handler` singleton
 
 Because of python unittests leaky test-cases it seems like you shall beware of [this issue](https://github.com/trustpilot/python-lambdarest/issues/16) when using the singleton `lambda_handler` in a multiple test-case scenario.
