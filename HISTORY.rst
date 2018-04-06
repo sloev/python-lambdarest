@@ -44,3 +44,9 @@ First OSS release
 
 **features**
 - An error handler can now be passed when creating a handler. Any unhandled error will be re-raise when None is passed
+
+4.0.0 (2018-04-06)
++++++++++++++++++++
+
+**features**
+- added Werkzeug path parameters

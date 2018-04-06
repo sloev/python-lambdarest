@@ -19,6 +19,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'jsonschema>=2.5.1',
     'strict_rfc3339>=0.7',
+    'werkzeug>=0.14.1'
 ]
 
 test_requirements = [
@@ -28,6 +29,7 @@ test_requirements = [
     'pytest==2.9.2',
     'mock>=2.0.0',
     'pytest-readme>=1.0.0',
+    'isort==4.2.15', # dependency of pylint
     'prospector>=0.12.5',
     'jsonschema>=2.5.1',
     'strict_rfc3339>=0.7'
@@ -39,7 +41,7 @@ extras = {
 
 setup(
     name='lambdarest',
-    version='3.0.1',
+    version='4.0.0',
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + '\n\n' + history,
     author="jgv",

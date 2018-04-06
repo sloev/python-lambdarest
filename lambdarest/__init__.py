@@ -3,12 +3,13 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '3.0.1'
+__version__ = '4.0.0'
 
 
 import json
 import logging
 from jsonschema import validate, ValidationError, FormatChecker
+from werkzeug.routing import Map, Rule, NotFound
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
@@ -39,7 +40,7 @@ class Response(object):
 def __float_cast(value):
     try:
         return float(value)
-    except:
+    except Exception:
         pass
     return value
 
@@ -47,7 +48,7 @@ def __float_cast(value):
 def __marshall_query_params(value):
     try:
         value = json.loads(value)
-    except:
+    except Exception:
         value_cand = value.split(",")
         if len(value_cand) > 1:
             value = list(map(__float_cast, value_cand))
@@ -58,7 +59,7 @@ def __json_load_query(query):
     query = query or {}
 
     return {key: __marshall_query_params(value)
-            for key,value in query.items()}
+            for key, value in query.items()}
 
 
 def default_error_handler(error, method):
@@ -91,7 +92,7 @@ def create_lambda_handler(error_handler=default_error_handler):
     JSON schema, please see http://json-schema.org for info.
 
     """
-    http_methods = {}
+    url_maps = Map()
 
     def inner_lambda_handler(event, context=None):
         # check if running as "aws lambda proxy"
@@ -106,18 +107,26 @@ def create_lambda_handler(error_handler=default_error_handler):
         path = event["path"].lower()
         method_name = event["httpMethod"].lower()
         func = None
+        kwargs = {}
         error_tuple = ("Internal server error", 500)
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
-            func = http_methods.get(path, http_methods.get("*", {}))[method_name]
-        except KeyError:
+            # bind the mapping to an empty server name
+            mapping = url_maps.bind('')
+            rule, kwargs = mapping.match(path, method=method_name, return_rule=True)
+            func = rule.endpoint
+
+            # if this is a catch-all rule, don't send any kwargs
+            if rule.rule == "/<path:path>/":
+                kwargs = {}
+        except NotFound as e:
             logging.warning(logging_message.format(
-                status_code=405, message="Not supported"))
-            error_tuple = ("Not supported", 405)
+                status_code=404, message=str(e)))
+            error_tuple = (str(e), 404)
 
         if func:
             try:
-                response = func(event)
+                response = func(event, **kwargs)
                 if not isinstance(response, Response):
                     # Set defaults
                     status_code = headers = None
@@ -172,8 +181,14 @@ def create_lambda_handler(error_handler=default_error_handler):
                         validate(json_data, schema, **__validate_kwargs)
                 return func(event, *args, **kwargs)
 
+            # if this is a catch all url, make sure that it's setup correctly
+            target_path = path
+            if path == '*':
+                target_path = "/<path:path>/"
+
             # register http handler function
-            http_methods.setdefault(path.lower(), {})[method_name.lower()] = inner
+            rule = Rule(target_path, endpoint=inner, methods=[method_name.lower()])
+            url_maps.add(rule)
             return inner
         return wrapper
 

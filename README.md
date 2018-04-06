@@ -64,7 +64,7 @@ my_schema = {
     }
 }
 
-@lambda_handler.handle("get", schema=my_schema)
+@lambda_handler.handle("get", path="/with-schema/", schema=my_schema)
 def my_own_get(event):
     return {"this": "will be json dumped"}
 
@@ -75,7 +75,7 @@ def my_own_get(event):
 valid_input_event = {
     "body": '{"foo":"bar"}',
     "httpMethod": "GET",
-    "path": "/"
+    "path": "/with-schema/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -84,7 +84,7 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 invalid_input_event = {
     "body": '{"foo":666}',
     "httpMethod": "GET",
-    "path": "/"
+    "path": "/with-schema/"
 }
 result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
@@ -116,7 +116,7 @@ my_schema = {
     }
 }
 
-@lambda_handler.handle("get", schema=my_schema)
+@lambda_handler.handle("get", path="/with-params/", schema=my_schema)
 def my_own_get(event):
     return event["json"]["query"]
 
@@ -129,7 +129,7 @@ valid_input_event = {
         "foo": "1, 2.2, 3"
     },
     "httpMethod": "GET",
-    "path": "/"
+    "path": "/with-params/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
@@ -158,6 +158,29 @@ input_event = {
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
+
+And you can specify path parameters as well, which will be passed as keyword arguments:
+
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/foo/<int:id>/")
+def my_own_get(event, id):
+    return {"my-id": id}
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "path": "/foo/1234/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
+```
+
 
 ## Anormal unittest behaviour with `lambda_handler` singleton
 
