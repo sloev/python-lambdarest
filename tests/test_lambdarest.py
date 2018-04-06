@@ -271,6 +271,24 @@ class TestLambdarestFunctions(unittest.TestCase):
             "statusCode": 200,
             "headers": {}}
 
+    def test_that_apigw_with_basepath_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+
+        get_mock1 = mock.Mock(return_value="foo")
+
+        self.lambda_handler.handle("get", path="/foo/bar")(get_mock1)  # decorate mock
+
+        self.event["path"] = "/v1/foo/bar"
+        self.event["resource"] = "/foo/bar"
+        result1 = self.lambda_handler(self.event, self.context)
+        assert result1 == {
+            "body": '"foo"',
+            "statusCode": 200,
+            "headers": {}}
+
     def test_that_no_path_specified_match_all(self):
         random.seed(time.mktime(datetime.now().timetuple()))
 

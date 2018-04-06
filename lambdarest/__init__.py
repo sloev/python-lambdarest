@@ -105,6 +105,13 @@ def create_lambda_handler(error_handler=default_error_handler):
         # Save context within event for easy access
         event["context"] = context
         path = event["path"].lower()
+
+        # if APIGW is used, and a custom domain is setup, the actual path will
+        # differ and will have the basepath included. 'Resource' will always
+        # contain the actual path to the resource
+        if 'resource' in event:
+            path = event['resource'].lower()
+
         method_name = event["httpMethod"].lower()
         func = None
         kwargs = {}
