@@ -29,6 +29,7 @@ test_requirements = [
     'pytest==2.9.2',
     'mock>=2.0.0',
     'pytest-readme>=1.0.0',
+    'isort==4.2.15', # dependency of pylint
     'prospector>=0.12.5',
     'jsonschema>=2.5.1',
     'strict_rfc3339>=0.7'
