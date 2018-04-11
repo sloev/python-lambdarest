@@ -50,3 +50,10 @@ First OSS release
 
 **features**
 - added Werkzeug path parameters
+
+4.1.0 (2018-04-11)
++++++++++++++++++++
+
+**features**
+- Added support for custom Api Gateway hostnames and basepaths
+- Added support for {proxy+} paths
