@@ -179,7 +179,8 @@ def create_lambda_handler(error_handler=default_error_handler):
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
                         "query": __json_load_query(
-                        event.get("queryStringParameters"))
+                            event.get("queryStringParameters")
+                        )
                     }
                     event["json"] = json_data
                     if schema:
@@ -188,9 +189,18 @@ def create_lambda_handler(error_handler=default_error_handler):
                 return func(event, *args, **kwargs)
 
             # if this is a catch all url, make sure that it's setup correctly
-            target_path = path
             if path == '*':
-                target_path = "/<path:path>/"
+                target_path = "/*"
+            else:
+                target_path = path
+
+            # replace the * with the werkzeug catch all path
+            if '*' in target_path:
+                target_path = target_path.replace('*', '<path:path>')
+
+            # make sure the path starts with /
+            if not target_path.startswith('/'):
+                raise ValueError("Please configure path with starting slash")
 
             # register http handler function
             rule = Rule(target_path, endpoint=inner, methods=[method_name.lower()])
