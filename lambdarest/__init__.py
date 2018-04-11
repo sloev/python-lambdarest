@@ -13,7 +13,7 @@ from werkzeug.routing import Map, Rule, NotFound
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
-__required_keys = ["httpMethod", "path"]
+__required_keys = ["httpMethod", "resource"]
 
 
 class Response(object):
@@ -104,13 +104,12 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # Save context within event for easy access
         event["context"] = context
-        path = event["path"].lower()
+        path = event['resource'].lower()
 
-        # if APIGW is used, and a custom domain is setup, the actual path will
-        # differ and will have the basepath included. 'Resource' will always
-        # contain the actual path to the resource
-        if 'resource' in event:
-            path = event['resource'].lower()
+        # proxy is a bit weird. We just replace the value in the uri with the
+        # actual value provided by apigw, and use that
+        if '{proxy+}' in path:
+            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
 
         method_name = event["httpMethod"].lower()
         func = None
