@@ -22,8 +22,8 @@ def assert_called_once(mock):
 class TestLambdarestFunctions(unittest.TestCase):
     def setUp(self):
         self.event = {
-          "resource": "/test",
-          "path": "/",
+          "resource": "/",
+          "path": "/v1/",
           "httpMethod": "POST",
           "headers": None,
           "queryStringParameters": None,
@@ -257,17 +257,57 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("get", path="/foo/bar")(get_mock1)  # decorate mock
         self.lambda_handler.handle("get", path="/bar/foo")(get_mock2)  # decorate mock
 
-        self.event["path"] = "/foo/bar"
+        self.event["resource"] = "/foo/bar"
         result1 = self.lambda_handler(self.event, self.context)
         assert result1 == {
             "body": '"foo"',
             "statusCode": 200,
             "headers": {}}
 
-        self.event["path"] = "/bar/foo"
+        self.event["resource"] = "/bar/foo"
         result2 = self.lambda_handler(self.event, self.context)
         assert result2 == {
             "body": '"bar"',
+            "statusCode": 200,
+            "headers": {}}
+
+    def test_that_apigw_with_basepath_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+
+        get_mock1 = mock.Mock(return_value="foo")
+
+        self.lambda_handler.handle("get", path="/foo/bar")(get_mock1)  # decorate mock
+
+        self.event["path"] = "/v1/foo/bar"
+        self.event["resource"] = "/foo/bar"
+        result1 = self.lambda_handler(self.event, self.context)
+        assert result1 == {
+            "body": '"foo"',
+            "statusCode": 200,
+            "headers": {}}
+
+
+    def test_that_apigw_with_proxy_param_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+
+        get_mock1 = mock.Mock(return_value="foo")
+
+        self.lambda_handler.handle("get", path="/foo/<path:path>")(get_mock1)  # decorate mock
+
+        self.event["path"] = "/v1/foo/"
+        self.event["pathParameters"] = {
+            "proxy": "foobar"
+        }
+        self.event["resource"] = "/foo/{proxy+}"
+        result1 = self.lambda_handler(self.event, self.context)
+        assert result1 == {
+            "body": '"foo"',
             "statusCode": 200,
             "headers": {}}
 
@@ -285,7 +325,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         r = range(1000)
         for i in range(10):
             # test with a non-deterministic path
-            self.event["path"] = "/foo/{}/".format(random.choice(r))
+            self.event["resource"] = "/foo/{}/".format(random.choice(r))
             result = self.lambda_handler(self.event, self.context)
             assert result == {
                 "body": '"foo"',
@@ -297,7 +337,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         json_body = {}
         self.event["body"] = json.dumps(json_body)
         self.event["httpMethod"] = "GET"
-        self.event["path"] = "/foo/bar"
+        self.event["resource"] = "/foo/bar"
 
         def divide_by_zero(_):
             return 1/0

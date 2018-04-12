@@ -36,7 +36,7 @@ def my_own_get(event):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "path": "/"
+    "resource": "/"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -75,7 +75,7 @@ def my_own_get(event):
 valid_input_event = {
     "body": '{"foo":"bar"}',
     "httpMethod": "GET",
-    "path": "/with-schema/"
+    "resource": "/with-schema/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -84,7 +84,7 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 invalid_input_event = {
     "body": '{"foo":666}',
     "httpMethod": "GET",
-    "path": "/with-schema/"
+    "resource": "/with-schema/"
 }
 result = lambda_handler(event=invalid_input_event)
 assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
@@ -129,7 +129,7 @@ valid_input_event = {
         "foo": "1, 2.2, 3"
     },
     "httpMethod": "GET",
-    "path": "/with-params/"
+    "resource": "/with-params/"
 }
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
@@ -153,7 +153,7 @@ def my_own_get(event):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "path": "/foo/bar/baz"
+    "resource": "/foo/bar/baz"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
@@ -175,10 +175,34 @@ def my_own_get(event, id):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "path": "/foo/1234/"
+    "resource": "/foo/1234/"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
+```
+
+Or use the Proxy APIGateway magic endpoint:
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/bar/<path:path>")
+def my_own_get(event, path):
+    return {"path": path}
+
+
+##### TEST #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "path": "/foo/bar/baz",
+    "resource": "/bar/{proxy+}",
+    "pathParameters": {
+      "proxy": "bar/baz"
+    }
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
 ```
 
 

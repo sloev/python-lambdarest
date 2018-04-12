@@ -3,7 +3,7 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '4.0.0'
+__version__ = '4.1.1'
 
 
 import json
@@ -13,7 +13,7 @@ from werkzeug.routing import Map, Rule, NotFound
 
 
 __validate_kwargs = {"format_checker": FormatChecker()}
-__required_keys = ["httpMethod", "path"]
+__required_keys = ["httpMethod", "resource"]
 
 
 class Response(object):
@@ -104,7 +104,13 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # Save context within event for easy access
         event["context"] = context
-        path = event["path"].lower()
+        path = event['resource'].lower()
+
+        # proxy is a bit weird. We just replace the value in the uri with the
+        # actual value provided by apigw, and use that
+        if '{proxy+}' in path:
+            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
+
         method_name = event["httpMethod"].lower()
         func = None
         kwargs = {}
@@ -117,7 +123,7 @@ def create_lambda_handler(error_handler=default_error_handler):
             func = rule.endpoint
 
             # if this is a catch-all rule, don't send any kwargs
-            if rule.rule == "/<path:path>/":
+            if rule.rule == "/<path:path>":
                 kwargs = {}
         except NotFound as e:
             logging.warning(logging_message.format(
@@ -173,7 +179,8 @@ def create_lambda_handler(error_handler=default_error_handler):
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
                         "query": __json_load_query(
-                        event.get("queryStringParameters"))
+                            event.get("queryStringParameters")
+                        )
                     }
                     event["json"] = json_data
                     if schema:
@@ -182,9 +189,18 @@ def create_lambda_handler(error_handler=default_error_handler):
                 return func(event, *args, **kwargs)
 
             # if this is a catch all url, make sure that it's setup correctly
-            target_path = path
             if path == '*':
-                target_path = "/<path:path>/"
+                target_path = "/*"
+            else:
+                target_path = path
+
+            # replace the * with the werkzeug catch all path
+            if '*' in target_path:
+                target_path = target_path.replace('*', '<path:path>')
+
+            # make sure the path starts with /
+            if not target_path.startswith('/'):
+                raise ValueError("Please configure path with starting slash")
 
             # register http handler function
             rule = Rule(target_path, endpoint=inner, methods=[method_name.lower()])

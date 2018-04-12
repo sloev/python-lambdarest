@@ -50,3 +50,9 @@ First OSS release
 
 **features**
 - added Werkzeug path parameters
+
+4.1.0 (2018-04-12)
++++++++++++++++++++
+
+**features**
+- added support for custom domains
