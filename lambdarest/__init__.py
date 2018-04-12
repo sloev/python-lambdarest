@@ -123,7 +123,7 @@ def create_lambda_handler(error_handler=default_error_handler):
             func = rule.endpoint
 
             # if this is a catch-all rule, don't send any kwargs
-            if rule.rule == "/<path:path>/":
+            if rule.rule == "/<path:path>":
                 kwargs = {}
         except NotFound as e:
             logging.warning(logging_message.format(
