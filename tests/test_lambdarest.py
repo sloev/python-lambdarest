@@ -289,6 +289,31 @@ class TestLambdarestFunctions(unittest.TestCase):
             "statusCode": 200,
             "headers": {}}
 
+    def test_that_uppercase_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+
+        def test_wordcase(request, foo):
+            return foo
+
+        self.lambda_handler.handle("get", path="/foo/bar/<string:foo>")(test_wordcase)  # decorate mock
+
+        self.event["resource"] = "/foo/bar/foobar"
+        result1 = self.lambda_handler(self.event, self.context)
+        assert result1 == {
+            "body": '"foobar"',
+            "statusCode": 200,
+            "headers": {}}
+
+        self.event["resource"] = "/foo/bar/FOOBAR"
+        result2 = self.lambda_handler(self.event, self.context)
+        assert result2 == {
+            "body": '"FOOBAR"',
+            "statusCode": 200,
+            "headers": {}}
+
 
     def test_that_apigw_with_proxy_param_works(self):
         json_body = {}

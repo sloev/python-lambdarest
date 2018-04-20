@@ -41,7 +41,7 @@ extras = {
 
 setup(
     name='lambdarest',
-    version='4.1.1',
+    version='4.1.2',
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + '\n\n' + history,
     author="jgv",
