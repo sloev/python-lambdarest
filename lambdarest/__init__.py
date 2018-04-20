@@ -104,7 +104,7 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # Save context within event for easy access
         event["context"] = context
-        path = event['resource'].lower()
+        path = event['resource']
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
