@@ -104,7 +104,15 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # Save context within event for easy access
         event["context"] = context
-        path = event['resource']
+
+        # check if resource and path are the same. If so, use the requested
+        # resource path, which will contain the actual requested pathself.
+        # If they are not the same, this is probably a proxied or custom domain
+        # where we need to use the event resource
+        if 'path' in event and event['resource'][0:3] == event['path'][0:3]:
+            path = event['path']
+        else:
+            path = event['resource']
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
