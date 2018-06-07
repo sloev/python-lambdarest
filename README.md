@@ -218,4 +218,4 @@ You can use pytest to run tests against your current Python version. To run test
 See [`setup.py`](setup.py) for test dependencies and install them with .[test].
 
 ## Contributors
-sloev, svdgraf, simongarnier, paddie, AlbertoTrinidade, martinbuberl
+sloev, svdgraaf, simongarnier, paddie, AlbertoTrinidade, martinbuberl
