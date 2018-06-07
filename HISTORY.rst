@@ -56,3 +56,11 @@ First OSS release
 
 **features**
 - added support for custom domains
+
+5.0.0 (2018-06-07)
++++++++++++++++++++
+
+**This is not a backwards compatible change.**
+
+**features**
+- removed support for python 3.3
