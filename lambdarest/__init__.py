@@ -102,7 +102,7 @@ def create_lambda_handler(error_handler=default_error_handler):
         # resource path, which will contain the actual requested path itself.
         # If they are not the same, this is a proxied or custom domain where
         # we need to use the event resource
-        if 'path' in event and event['resource'][0:3] == event['path'][0:3]:
+        if 'path' in event and event['resource'].split('/')[0] == event['path'].split('/')[0]:
             path = event['path']
         else:
             path = event['resource']
