@@ -212,10 +212,10 @@ Because of python unittests leaky test-cases it seems like you shall beware of [
 
 ## Tests
 
-You can use pytest to run tests against your current Python version. To run tests for all platforms, use tox or the built-in `test-all` Make target:
+You can use pytest to run tests against your current Python version. To run tests for current python version run `pytest`
 
-```
-make test-all
-```
 
-See [`setup.py`](setup.py) for test dependencies.
+See [`setup.py`](setup.py) for test dependencies and install them with .[test].
+
+## Contributors
+sloev, svdgraaf, simongarnier, paddie, AlbertoTrinidade, martinbuberl

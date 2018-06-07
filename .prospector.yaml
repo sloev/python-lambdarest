@@ -5,6 +5,8 @@ ignore-patterns:
   - (^|/)\..+
   - ^docs/
   - ^build/
+  - test_readme.py
+
 
 test-warnings: true
 
@@ -38,3 +40,9 @@ pylint:
         - C0302
         - W0142
         - W0141
+        - E1123
+        - W1202
+        - R0204
+        - C1001
+        - C0201
+        - C0413 

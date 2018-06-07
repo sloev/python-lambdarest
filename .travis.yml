@@ -1,20 +1,25 @@
 sudo: required
+
 language: python
+
 addons:
   apt_packages:
   - pandoc
+
 python:
 - '2.7'
-- '3.3'
 - '3.4'
 - '3.5'
+
 install:
-- pip install tox==2.3.1
-- pip install tox-travis==0.8
+- pip install -U pip
 - pip install pypandoc
+- pip install .[test]
 
 script:
-- tox
+- py.test
+- prospector -M
+
 branches:
   only: master
 
