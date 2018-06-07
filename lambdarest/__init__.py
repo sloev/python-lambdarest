@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
-__author__ = """sloev"""
-__email__ = 'jgv@trustpilot.com'
-__version__ = '4.1.2'
-
-
 import json
 import logging
 from jsonschema import validate, ValidationError, FormatChecker
@@ -37,7 +30,7 @@ class Response(object):
         }
 
 
-def __float_cast(value):
+def _float_cast(value):
     try:
         return float(value)
     except Exception:
@@ -45,20 +38,20 @@ def __float_cast(value):
     return value
 
 
-def __marshall_query_params(value):
+def _marshall_query_params(value):
     try:
         value = json.loads(value)
     except Exception:
         value_cand = value.split(",")
         if len(value_cand) > 1:
-            value = list(map(__float_cast, value_cand))
+            value = list(map(_float_cast, value_cand))
     return value
 
 
-def __json_load_query(query):
+def _json_load_query(query):
     query = query or {}
 
-    return {key: __marshall_query_params(value)
+    return {key: _marshall_query_params(value)
             for key, value in query.items()}
 
 
@@ -178,7 +171,7 @@ def create_lambda_handler(error_handler=default_error_handler):
                 if load_json:
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
-                        "query": __json_load_query(
+                        "query": _json_load_query(
                             event.get("queryStringParameters")
                         )
                     }
@@ -211,6 +204,7 @@ def create_lambda_handler(error_handler=default_error_handler):
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
     return lambda_handler
+
 
 # singleton
 lambda_handler = create_lambda_handler()
