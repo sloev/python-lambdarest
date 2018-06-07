@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 import json
 import logging
 from jsonschema import validate, ValidationError, FormatChecker
@@ -206,6 +204,7 @@ def create_lambda_handler(error_handler=default_error_handler):
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
     return lambda_handler
+
 
 # singleton
 lambda_handler = create_lambda_handler()
