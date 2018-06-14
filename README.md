@@ -195,7 +195,7 @@ def my_own_get(event, path):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "path": "/foo/bar/baz",
+    "path": "/v1/bar/baz",
     "resource": "/bar/{proxy+}",
     "pathParameters": {
       "proxy": "bar/baz"

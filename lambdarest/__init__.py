@@ -99,10 +99,22 @@ def create_lambda_handler(error_handler=default_error_handler):
         event["context"] = context
         path = event['resource']
 
+        # Check if a path is set, if so, check if the base path is the same as
+        # the resource. If not, this is an api with a custom domainname.
+        # if so, the path will contain the actual request, but it will be
+        # prefixed with the basepath, which needs to be removed. Api Gateway
+        # only supports single level basepaths
+        # eg:
+        # path: /v2/foo/foobar
+        # resource: /foo/{name}
+        # the /v2 needs to be removed
+        if 'path' in event and event['path'].split('/')[1] != event['resource'].split('/')[1]:
+            path = '/%s' % '/'.join(event['path'].split('/')[2:])
+
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
-        if '{proxy+}' in path:
-            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
+        if '{proxy+}' in event['resource']:
+            path = event['resource'].replace('{proxy+}', event['pathParameters']['proxy'])
 
         method_name = event["httpMethod"].lower()
         func = None
