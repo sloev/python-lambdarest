@@ -97,7 +97,6 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # Save context within event for easy access
         event["context"] = context
-
         path = event['resource']
 
         # Check if a path is set, if so, check if the base path is the same as
@@ -114,8 +113,8 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
-        if '{proxy+}' in path:
-            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
+        if '{proxy+}' in event['resource']:
+            path = event['resource'].replace('{proxy+}', event['pathParameters']['proxy'])
 
         method_name = event["httpMethod"].lower()
         func = None
