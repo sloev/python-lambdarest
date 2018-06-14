@@ -64,3 +64,9 @@ First OSS release
 
 **features**
 - removed support for python 3.3
+
+5.0.1 (2018-06-13)
++++++++++++++++++++
+
+**features**
+- Fixed issue with custom domains and path variables
