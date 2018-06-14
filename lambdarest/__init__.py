@@ -98,14 +98,19 @@ def create_lambda_handler(error_handler=default_error_handler):
         # Save context within event for easy access
         event["context"] = context
 
-        # check if resource and path are the same. If so, use the requested
-        # resource path, which will contain the actual requested path itself.
-        # If they are not the same, this is a proxied or custom domain where
-        # we need to use the event resource
-        if 'path' in event and event['resource'].split('/')[1] == event['path'].split('/')[1]:
-            path = event['path']
-        else:
-            path = event['resource']
+        path = event['resource']
+
+        # Check if a path is set, if so, check if the base path is the same as
+        # the resource. If not, this is an api with a custom domainname.
+        # if so, the path will contain the actual request, but it will be
+        # prefixed with the basepath, which needs to be removed. Api Gateway
+        # only supports single level basepaths
+        # eg:
+        # path: /v2/foo/foobar
+        # resource: /foo/{name}
+        # the /v2 needs to be removed
+        if 'path' in event and event['path'].split('/')[1] != event['resource'].split('/')[1]:
+            path = '/%s' % '/'.join(event['path'].split('/')[2:])
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
