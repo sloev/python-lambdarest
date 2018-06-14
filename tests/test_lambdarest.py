@@ -23,7 +23,6 @@ class TestLambdarestFunctions(unittest.TestCase):
     def setUp(self):
         self.event = {
           "resource": "/",
-          "path": "/v1/",
           "httpMethod": "POST",
           "headers": None,
           "queryStringParameters": None,
@@ -325,7 +324,7 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         self.lambda_handler.handle("get", path="/foo/<path:path>")(get_mock1)  # decorate mock
 
-        self.event["path"] = "/v1/foo/"
+        self.event["path"] = "/v1/foo/foobar"
         self.event["pathParameters"] = {
             "proxy": "foobar"
         }
