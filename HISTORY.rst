@@ -70,3 +70,9 @@ First OSS release
 
 **features**
 - Fixed issue with custom domains and path variables
+
+5.1.0 (2018-11-01)
++++++++++++++++++++
+
+**features**
+- Return None only if the value of the variable is None. This will allow to return empty strings.
