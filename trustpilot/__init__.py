@@ -2,4 +2,4 @@
 
 __author__ = """sloev"""
 __email__ = 'jgv@trustpilot.com'
-__version__ = '5.0.2'
+__version__ = '6.0.1'
