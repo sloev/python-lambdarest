@@ -1,0 +1,56 @@
+sudo: required
+language: python
+
+addons:
+  apt_packages:
+  - pandoc
+
+python:
+- '2.7'
+- '3.5'
+- '3.6'
+- '3.7'
+
+install:
+- pip install -U pip
+- pip install pypandoc
+- pip install .[test]
+- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pip install .[async]; fi
+
+script:
+- pytest
+
+branches:
+  only: master
+
+after_success:
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- git tag -a v$(python setup.py --version) -m "Travis build $TRAVIS_BUILD_NUMBER pushed
+  a tag."
+- git push origin --tags
+- git fetch origin
+
+deploy:
+  - provider: pypi
+    skip_cleanup: true
+    distributions: sdist
+    user: "trustpilot"
+    password:
+      secure: TkVRq71rqno0lb4EIheTzOjgiD17AlKXjhot7nX+BZ3KrgMy9H8ioEhnPMap74BhdgT4ibGXuCqQDzGQpmluB3fU+id5GstzUzlx2g7H8m+SQFa01RK4J4B1lRO/C+hHMRKX/REueI5anqTJiynwOGogIFzh5zX2jyp7hQmUyvZZOyw8jKMRjoAJjwt0ws9bRHmfP7emNlMcmqgm/pDfH3Xju8igIcuHHNUHkOeKGuA2PS18sl9Mq0yv/q4nxpEL3MnsNZ3akwPPraN6GKVoPquKvGUiJ0OtssF0GysWm6YA8aisABI4DHyhFoM5xO9ztmSAUhXfgTmp8LiHX4UZ9NhRcuM5EbIVwPQhy+vGV/hGFR6ndP9I5CMUUv7u2nZJJu5RHSkNhrT/kQn3krcBNReIXoe8xXPusbxOkuXRntSomB1UGiaZKDsUro96DNQ1DXKdKlcyc/bcfT4dizrZN9n+lnUqQ60RgEGYyfav5j4POtKu1p1PNa8lztKfgOwCU8rKfJXqOpq/PWYencOhSstHJZc2pvMYEM2RsOM0BLom3fWQo/pxSEnbpNFs8sTxzAgmMEgfifXg3sYpyN+qXbeqIQLVLpdXhiY3QTK81n6uB0N4/RTWh063HBnOWV0rlEXDXFVADDGMOFeEeTp/ouT3G2icADKxeNBt0sCSfng=
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-trustpilot
+      condition: $TRAVIS_PYTHON_VERSION = "3.5"
+  - provider: releases
+    skip_cleanup: true
+    api-key:
+      secure: A3d14CoeljEpqzFGIGMrvtvJycXLrsSVOzPVkY751zh1CtxH7m1DzjadmEKNKbQoRauO23/eoW8cReX8Q+6TSB188gHcd//PGUkPIDTLGwgb6s3d53dQG+weD4w2VU50MjQIdIgB+AcBRu1zKYMrKKLya27MZkNb8ThgdFRvi/0Pp7FrmxA3KCnOyFV2RoyJLJlN3oxNoe3IHRq+8OtItGRmB+UncBqomr/v6OoN4+9UK2QZjTSb923qCLKW/qkPQf8WOlFzC5iNFZ+TgFn3bzUkTcpZvwbtuFrfRTfyr030MDHHmJ39A9usr2zZvX233B13nh0gimxRVj31PnNNCBQTAzDi96BRecnqve3rMW0Zom19UY00JnR3lpHRwD4vmlf26ao9TQ/GLJTzZEWudDEbnYFJag7B7S/mA0fegs4DUM8a7MtliHzM4SqBnIFDD3qMQfiyc9l5auTT3njFyvflU5KbmlmzxqayrVY0G0wnPhnskHjGsngj0XOCi1BIg0Mm9SwJdfRI6/NPVqHbLKXeLVnUXaM61wnvMxu7rTVd0HPdoUtkl9OoW4hP9oFKHpiZ/7E7+2EM0bQJh9jBDVNpjAmQqOB93swLbYBoa+UeYzJyq30ZoaC7uqMUNGQRhpyjwrpwmcOahxyueZgdiFmuFMJyCNoovzxblw22EqM=
+    file_glob: true
+    file: dist/*
+    on:
+      tags: false
+      branch: master
+      repo: trustpilot/python-trustpilot
+      condition: $TRAVIS_PYTHON_VERSION = "3.5"
