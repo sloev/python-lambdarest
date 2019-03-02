@@ -100,7 +100,8 @@ class TestLambdarestFunctions(unittest.TestCase):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {"body": '"foo"', "statusCode": 200, "headers": {}}
+        self.assertEqual(result, {"body": '"foo"', "statusCode": 200, "headers": {}, "statusDescription": "HTTP OK",
+                                  "isBase64Encoded": False})
         post_mock.assert_called_with(assert_event)
 
     def test_schema_valid(self):
@@ -134,7 +135,8 @@ class TestLambdarestFunctions(unittest.TestCase):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post" , schema=post_schema)(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {"body": '"foo"', "statusCode": 200, "headers": {}}
+        self.assertEqual(result, {"body": '"foo"', "statusCode": 200, "headers": {},
+                                  "statusDescription": "HTTP OK", "isBase64Encoded": False})
         post_mock.assert_called_with(assert_event)
 
     def test_schema_invalid(self):
@@ -168,7 +170,8 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("post", schema=post_schema)(
             post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {"body": '"Validation Error"', "statusCode": 400, "headers": {}}
+        self.assertEqual(result, {"body": '"Validation Error"', "statusCode": 400, "headers": {},
+                                  "statusDescription": "HTTP Bad Request", "isBase64Encoded": False})
 
     def test_that_it_returns_bad_request_if_not_given_lambda_proxy_input(self):
         json_body = dict(
@@ -180,10 +183,12 @@ class TestLambdarestFunctions(unittest.TestCase):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(event, self.context)
-        assert result == {
+        self.assertEqual(result, {
             "body": '"Bad request, maybe not using Lambda Proxy?"',
             "statusCode": 500,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP Internal Server Error",
+            "isBase64Encoded": False})
 
 
     def test_that_it_unpacks_and_validates_query_params(self):
@@ -235,14 +240,16 @@ class TestLambdarestFunctions(unittest.TestCase):
         }
         self.lambda_handler.handle("post", schema=post_schema)(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {"body": '"foobar"', "statusCode": 200, "headers": {}}
+        self.assertEqual(result, {"body": '"foobar"', "statusCode": 200, "headers": {}, "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
 
     def test_that_it_works_without_body_or_queryStringParameters(self):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        assert result == {'body': '"foo"', 'headers': {}, 'statusCode': 200}
+        self.assertEqual(result, {'body': '"foo"', 'headers': {}, 'statusCode': 200, "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
     def test_that_specified_path_works(self):
         json_body = {}
@@ -258,17 +265,21 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         self.event["resource"] = "/foo/bar"
         result1 = self.lambda_handler(self.event, self.context)
-        assert result1 == {
+        self.assertEqual(result1, {
             "body": '"foo"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
         self.event["resource"] = "/bar/foo"
         result2 = self.lambda_handler(self.event, self.context)
-        assert result2 == {
+        self.assertEqual(result2, {
             "body": '"bar"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
     def test_that_apigw_with_basepath_works(self):
         json_body = {}
@@ -283,10 +294,12 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.event["path"] = "/v1/foo/bar"
         self.event["resource"] = "/foo/bar"
         result1 = self.lambda_handler(self.event, self.context)
-        assert result1 == {
+        self.assertEqual(result1, {
             "body": '"foo"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
     def test_that_uppercase_works(self):
         json_body = {}
@@ -301,17 +314,21 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         self.event["resource"] = "/foo/bar/foobar"
         result1 = self.lambda_handler(self.event, self.context)
-        assert result1 == {
+        self.assertEqual(result1, {
             "body": '"foobar"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
         self.event["resource"] = "/foo/bar/FOOBAR"
         result2 = self.lambda_handler(self.event, self.context)
-        assert result2 == {
+        self.assertEqual(result2, {
             "body": '"FOOBAR"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
 
     def test_that_apigw_with_proxy_param_works(self):
@@ -330,10 +347,12 @@ class TestLambdarestFunctions(unittest.TestCase):
         }
         self.event["resource"] = "/foo/{proxy+}"
         result1 = self.lambda_handler(self.event, self.context)
-        assert result1 == {
+        self.assertEqual(result1, {
             "body": '"foo"',
             "statusCode": 200,
-            "headers": {}}
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})
 
     def test_that_no_path_specified_match_all(self):
         random.seed(time.mktime(datetime.now().timetuple()))
@@ -351,11 +370,13 @@ class TestLambdarestFunctions(unittest.TestCase):
             # test with a non-deterministic path
             self.event["resource"] = "/foo/{}/".format(random.choice(r))
             result = self.lambda_handler(self.event, self.context)
-            assert result == {
+            self.assertEqual(result, {
                 "body": '"foo"',
                 "statusCode": 200,
-                "headers": {}
-            }
+                "headers": {},
+                "statusDescription": "HTTP OK",
+                "isBase64Encoded": False
+            })
 
     def test_exception_in_handler_should_be_reraised(self):
         json_body = {}
@@ -371,3 +392,29 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         with self.assertRaises(ZeroDivisionError):
             self.lambda_handler(self.event, self.context)
+
+    def test_that_alb_param_parm_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+        self.event["queryStringParameters"] = {}
+        self.event["headers"] = {}
+        del self.event["resource"]
+        del self.event["stageVariables"]
+
+        def mock_handler(event, id):
+            return "foo:" + id
+
+        get_mock1 = mock.Mock(wraps=mock_handler)
+
+        self.lambda_handler.handle("get", path="/foo/<id>/bar")(get_mock1)  # decorate mock
+
+        self.event["path"] = "/foo/foobar/bar"
+        result1 = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result1, {
+            "body": '"foo:foobar"',
+            "statusCode": 200,
+            "headers": {},
+            "statusDescription": "HTTP OK",
+            "isBase64Encoded": False})

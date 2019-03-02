@@ -39,7 +39,7 @@ input_event = {
     "resource": "/"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
 
 ## Advanced Usage
@@ -78,7 +78,7 @@ valid_input_event = {
     "resource": "/with-schema/"
 }
 result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 
 
 invalid_input_event = {
@@ -87,7 +87,7 @@ invalid_input_event = {
     "resource": "/with-schema/"
 }
 result = lambda_handler(event=invalid_input_event)
-assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
+assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}, "statusDescription": "HTTP Bad Request", "isBase64Encoded": False}
 ```
 
 ### Query Params
@@ -132,7 +132,7 @@ valid_input_event = {
     "resource": "/with-params/"
 }
 result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
 
 ### Routing
@@ -156,7 +156,7 @@ input_event = {
     "resource": "/foo/bar/baz"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
 
 And you can specify path parameters as well, which will be passed as keyword arguments:
@@ -178,7 +178,7 @@ input_event = {
     "resource": "/foo/1234/"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
 
 Or use the Proxy APIGateway magic endpoint:
@@ -202,41 +202,7 @@ input_event = {
     }
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"path": "baz"}', "statusCode": 200, "headers":{}}
-```
-
-### Custom JSON encoder
-
-Sometimes you need to override the json encoder, you can provide one like so:
-
-```python
-import json
-from lambdarest import create_lambda_handler
-import decimal
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
-
-lambda_handler = create_lambda_handler(json_encoder=DecimalEncoder)
-
-@lambda_handler.handle("get", path="/foo/")
-def pi(event):
-    return decimal.Decimal(3.14)
-
-
-##### TEST #####
-
-
-input_event = {
-    "body": '{}',
-    "httpMethod": "GET",
-    "resource": "/foo/"
-}
-result = lambda_handler(event=input_event)
-assert result == {"body": '3.14', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
 
 
