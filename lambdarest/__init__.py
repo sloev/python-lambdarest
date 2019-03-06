@@ -22,15 +22,15 @@ class Response(object):
         self.status_code = status_code
         self.headers = headers
 
-    def to_json(self):
+    def to_json(self, encoder=json.JSONEncoder):
         return {
-            "body": json.dumps(self.body) if self.body is not None else None,
+            "body": json.dumps(self.body, cls=encoder) if self.body is not None else None,
             "statusCode": self.status_code or 200,
             "headers": self.headers or {}
         }
 
 
-def _float_cast(value):
+def __float_cast(value):
     try:
         return float(value)
     except Exception:
@@ -38,20 +38,20 @@ def _float_cast(value):
     return value
 
 
-def _marshall_query_params(value):
+def __marshall_query_params(value):
     try:
         value = json.loads(value)
     except Exception:
         value_cand = value.split(",")
         if len(value_cand) > 1:
-            value = list(map(_float_cast, value_cand))
+            value = list(map(__float_cast, value_cand))
     return value
 
 
-def _json_load_query(query):
+def __json_load_query(query):
     query = query or {}
 
-    return {key: _marshall_query_params(value)
+    return {key: __marshall_query_params(value)
             for key, value in query.items()}
 
 
@@ -63,7 +63,7 @@ def default_error_handler(error, method):
     ))
 
 
-def create_lambda_handler(error_handler=default_error_handler):
+def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder):
     """Create a lambda handler function with `handle` decorator as attribute
 
     example:
@@ -113,8 +113,8 @@ def create_lambda_handler(error_handler=default_error_handler):
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
-        if '{proxy+}' in event['resource']:
-            path = event['resource'].replace('{proxy+}', event['pathParameters']['proxy'])
+        if '{proxy+}' in path:
+            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
 
         method_name = event["httpMethod"].lower()
         func = None
@@ -155,7 +155,7 @@ def create_lambda_handler(error_handler=default_error_handler):
                     else:  # if response is string, dict, etc.
                         body = response
                     response = Response(body, status_code, headers)
-                return response.to_json()
+                return response.to_json(encoder=json_encoder)
 
             except ValidationError as error:
                 error_description = "Schema[{}] with value {}".format(
@@ -183,7 +183,7 @@ def create_lambda_handler(error_handler=default_error_handler):
                 if load_json:
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
-                        "query": _json_load_query(
+                        "query": __json_load_query(
                             event.get("queryStringParameters")
                         )
                     }

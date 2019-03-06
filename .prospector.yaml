@@ -25,6 +25,8 @@ pep8:
     run: true
     options:
         max-line-length: 100
+    disable:
+        - N807
 
 pyflakes:
     run: true
@@ -45,4 +47,4 @@ pylint:
         - R0204
         - C1001
         - C0201
-        - C0413 
+        - C0413

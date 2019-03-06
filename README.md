@@ -202,7 +202,41 @@ input_event = {
     }
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"path": "baz"}', "statusCode": 200, "headers":{}}
+```
+
+### Custom JSON encoder
+
+Sometimes you need to override the json encoder, you can provide one like so:
+
+```python
+import json
+from lambdarest import create_lambda_handler
+import decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
+lambda_handler = create_lambda_handler(json_encoder=DecimalEncoder)
+
+@lambda_handler.handle("get", path="/foo/")
+def pi(event):
+    return decimal.Decimal(3.14)
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/foo/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '3.14', "statusCode": 200, "headers":{}}
 ```
 
 
