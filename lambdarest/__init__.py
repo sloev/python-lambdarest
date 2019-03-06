@@ -70,7 +70,7 @@ def default_error_handler(error, method):
     ))
 
 
-def create_lambda_handler(error_handler=default_error_handler, encoder=json.JSONEncoder):
+def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder):
     """Create a lambda handler function with `handle` decorator as attribute
 
     example:
@@ -93,7 +93,6 @@ def create_lambda_handler(error_handler=default_error_handler, encoder=json.JSON
 
     """
     url_maps = Map()
-    json_encoder = encoder
 
     def inner_lambda_handler(event, context=None):
         # check if running as "aws lambda proxy"

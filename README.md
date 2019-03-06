@@ -153,6 +153,45 @@ In order to use the **-c** option please supply the filename of a JSON in the fo
 }
 ```
 
+### Custom JSON encoder
+
+Sometimes you need to override the json encoder, you can provide one like so:
+
+```python
+import json
+from lambdarest import create_lambda_handler
+import decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
+lambda_handler = create_lambda_handler(json_encoder=DecimalEncoder)
+
+@lambda_handler.handle("get", path="/foo/")
+def pi(event):
+    return decimal.Decimal(3.14)
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/foo/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '3.14', "statusCode": 200, "headers":{}}
+```
+
+
+## Anormal unittest behaviour with `lambda_handler` singleton
+
+Because of python unittests leaky test-cases it seems like you shall beware of [this issue](https://github.com/trustpilot/python-lambdarest/issues/16) when using the singleton `lambda_handler` in a multiple test-case scenario.
+
 ## Tests
 
 You can use pytest to run tests against your current Python version. 
