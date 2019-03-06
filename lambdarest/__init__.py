@@ -217,5 +217,6 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
     lambda_handler.handle = inner_handler
     return lambda_handler
 
+
 # singleton
 lambda_handler = create_lambda_handler()

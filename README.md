@@ -202,7 +202,7 @@ input_event = {
     }
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '{"path": "baz"}', "statusCode": 200, "headers":{}}
 ```
 
 ### Custom JSON encoder
