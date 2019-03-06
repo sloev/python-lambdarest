@@ -76,3 +76,9 @@ First OSS release
 
 **features**
 - Return None only if the value of the variable is None. This will allow to return empty strings.
+
+5.2.0 (2019-03-06)
++++++++++++++++++++
+
+**features**
+- you can override the json encoder with your own
