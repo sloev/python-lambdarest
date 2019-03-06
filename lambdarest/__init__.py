@@ -25,23 +25,29 @@ class Response(object):
         self.status_code_description = None
         self.isBase64_encoded = False
 
-    def to_json(self, encoder=json.JSONEncoder):
+    def to_json(self, encoder=json.JSONEncoder, application_load_balancer=False):
         """Generates and returns an object with the expected field names.
 
         Note: method name is slightly misleading, should be populate_response or with_defaults etc
         """
         status_code = self.status_code or 200
-        return {
+        response = {
             "body": json.dumps(self.body, cls=encoder) if self.body is not None else None,
             "statusCode": status_code,
-            # note must be HTTP [description] as per:
-            #   https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
-            # the value of 200 OK fails:
-            #   https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#respond-to-load-balancer
-            "statusDescription": self.status_code_description or "HTTP " + HTTP_STATUS_CODES[status_code],
-            "isBase64Encoded": self.isBase64_encoded,
             "headers": self.headers or {}
         }
+        if application_load_balancer:
+            response.update(
+                {
+                    # note must be HTTP [description] as per:
+                    #   https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
+                    # the value of 200 OK fails:
+                    #   https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#respond-to-load-balancer
+                    "statusDescription": self.status_code_description or "HTTP " + HTTP_STATUS_CODES[status_code],
+                    "isBase64Encoded": self.isBase64_encoded
+                }
+            )
+        return response
 
 
 def __float_cast(value):
@@ -77,7 +83,7 @@ def default_error_handler(error, method):
     ))
 
 
-def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder):
+def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder, application_load_balancer=False):
     """Create a lambda handler function with `handle` decorator as attribute
 
     example:
@@ -107,7 +113,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                         key in event for key in __required_keys) or not any(key in event for key in __either_keys):
             message = "Bad request, maybe not using Lambda Proxy?"
             logging.error(message)
-            return Response(message, 500).to_json()
+            return Response(message, 500).to_json(application_load_balancer=application_load_balancer)
 
         # Save context within event for easy access
         event["context"] = context
@@ -174,7 +180,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                     else:  # if response is string, dict, etc.
                         body = response
                     response = Response(body, status_code, headers)
-                return response.to_json(encoder=json_encoder)
+                return response.to_json(encoder=json_encoder, application_load_balancer=application_load_balancer)
 
             except ValidationError as error:
                 error_description = "Schema[{}] with value {}".format(
@@ -190,7 +196,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                     raise
 
         body, status_code = error_tuple
-        return Response(body, status_code).to_json()
+        return Response(body, status_code).to_json(application_load_balancer=application_load_balancer)
 
     def inner_handler(method_name, path="/", schema=None, load_json=True):
         if schema and not load_json:

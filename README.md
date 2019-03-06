@@ -39,7 +39,7 @@ input_event = {
     "resource": "/"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
 ## Advanced Usage
@@ -78,7 +78,7 @@ valid_input_event = {
     "resource": "/with-schema/"
 }
 result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 
 
 invalid_input_event = {
@@ -87,7 +87,7 @@ invalid_input_event = {
     "resource": "/with-schema/"
 }
 result = lambda_handler(event=invalid_input_event)
-assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}, "statusDescription": "HTTP Bad Request", "isBase64Encoded": False}
+assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 ```
 
 ### Query Params
@@ -132,7 +132,7 @@ valid_input_event = {
     "resource": "/with-params/"
 }
 result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
 ```
 
 ### Routing
@@ -156,7 +156,7 @@ input_event = {
     "resource": "/foo/bar/baz"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
 ```
 
 And you can specify path parameters as well, which will be passed as keyword arguments:
@@ -178,7 +178,7 @@ input_event = {
     "resource": "/foo/1234/"
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
 ```
 
 Or use the Proxy APIGateway magic endpoint:
@@ -202,9 +202,34 @@ input_event = {
     }
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
 ```
 
+## Use it with AWS Application Load Balancer
+
+In order to use it with Application Load Balancer you need to create your own lambda_handler and not use the singleton:
+
+```python
+from lambdarest import create_lambda_handler
+
+lambda_handler = create_lambda_handler(application_load_balancer=True)
+
+@lambda_handler.handle("get", path="/foo/<int:id>/")
+def my_own_get(event, id):
+    return {"my-id": id}
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/foo/1234/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+```
 
 ## Anormal unittest behaviour with `lambda_handler` singleton
 
