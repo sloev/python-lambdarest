@@ -3,10 +3,11 @@ import json
 import logging
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
-
+from werkzeug.http import HTTP_STATUS_CODES
 
 __validate_kwargs = {"format_checker": FormatChecker()}
-__required_keys = ["httpMethod", "resource"]
+__required_keys = ["httpMethod"]
+__either_keys = ["path", "resource"]
 
 
 class Response(object):
@@ -21,11 +22,24 @@ class Response(object):
         self.body = body
         self.status_code = status_code
         self.headers = headers
+        self.status_code_description = None
+        self.isBase64_encoded = False
 
     def to_json(self, encoder=json.JSONEncoder):
+        """Generates and returns an object with the expected field names.
+
+        Note: method name is slightly misleading, should be populate_response or with_defaults etc
+        """
+        status_code = self.status_code or 200
         return {
             "body": json.dumps(self.body, cls=encoder) if self.body is not None else None,
-            "statusCode": self.status_code or 200,
+            "statusCode": status_code,
+            # note must be HTTP [description] as per:
+            #   https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
+            # the value of 200 OK fails:
+            #   https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#respond-to-load-balancer
+            "statusDescription": self.status_code_description or "HTTP " + HTTP_STATUS_CODES[status_code],
+            "isBase64Encoded": self.isBase64_encoded,
             "headers": self.headers or {}
         }
 
@@ -90,14 +104,19 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
     def inner_lambda_handler(event, context=None):
         # check if running as "aws lambda proxy"
         if not isinstance(event, dict) or not all(
-                        key in event for key in __required_keys):
+                        key in event for key in __required_keys) or not any(key in event for key in __either_keys):
             message = "Bad request, maybe not using Lambda Proxy?"
             logging.error(message)
             return Response(message, 500).to_json()
 
         # Save context within event for easy access
         event["context"] = context
-        path = event['resource']
+        # for application load balancers, no api definition is used hence no resource is set so just use path
+        if 'resource' not in event:
+            resource = event['path']
+        else:
+            resource = event['resource']
+        path = resource
 
         # Check if a path is set, if so, check if the base path is the same as
         # the resource. If not, this is an api with a custom domainname.
@@ -108,13 +127,13 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
         # path: /v2/foo/foobar
         # resource: /foo/{name}
         # the /v2 needs to be removed
-        if 'path' in event and event['path'].split('/')[1] != event['resource'].split('/')[1]:
+        if 'path' in event and event['path'].split('/')[1] != resource.split('/')[1]:
             path = '/%s' % '/'.join(event['path'].split('/')[2:])
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
-        if '{proxy+}' in path:
-            path = path.replace('{proxy+}', event['pathParameters']['proxy'])
+        if '{proxy+}' in resource:
+            path = resource.replace('{proxy+}', event['pathParameters']['proxy'])
 
         method_name = event["httpMethod"].lower()
         func = None

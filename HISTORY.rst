@@ -82,3 +82,9 @@ First OSS release
 
 **features**
 - you can override the json encoder with your own
+
+5.3.0 (2019-03-06)
++++++++++++++++++++
+
+**features**
+- Add support for Application Load Balancer
