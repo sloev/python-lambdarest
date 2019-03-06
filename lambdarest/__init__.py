@@ -31,7 +31,7 @@ class Response(object):
 
     def to_json(self, encoder=json.JSONEncoder):
         return {
-            "body": json.dumps(self.body, cls=encoder) if self.body else None,
+            "body": json.dumps(self.body, cls=encoder) if self.body is not None else None,
             "statusCode": self.status_code or 200,
             "headers": self.headers or {}
         }
