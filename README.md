@@ -183,11 +183,11 @@ assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
 
 Or you can specify more complex parametrized resource path and get parameteres as arguments:
 ```python
-from lambdarest import lambda_handler
+from .lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/object/<int:object_id>/props/<string:foo>/get")
 def my_own_get(event, object_id, foo):
-    return {"object_id": int(object_id), "foo": foo}
+    return [{"object_id": int(object_id)}, {"foo": foo}]
 
 
 ##### TEST #####
@@ -203,7 +203,7 @@ input_event = {
     }
 }
 result = lambda_handler(event=input_event)
-assert result == {"body": '{"object_id": 777, "foo": "bar"}', "statusCode": 200, "headers":{}}
+assert result == {"body": '[{"object_id": 777}, {"foo": "bar"}]', "statusCode": 200, "headers":{}}
 
 ```
 Or use the Proxy APIGateway magic endpoint:
