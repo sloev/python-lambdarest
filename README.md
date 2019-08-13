@@ -183,7 +183,7 @@ assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}}
 
 Or you can specify more complex parametrized resource path and get parameteres as arguments:
 ```python
-from .lambdarest import lambda_handler
+from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/object/<int:object_id>/props/<string:foo>/get")
 def my_own_get(event, object_id, foo):
