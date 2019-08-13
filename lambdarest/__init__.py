@@ -100,12 +100,13 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
     # prepare resource.
     # evaluate from /foo/{key1}/bar/{key2}/{proxy+}
     # to /foo/${key1}/bar/${key2}/{proxy+}
-    try:
+
+    if path_parameters is not None:
         for path_key in (path_parameters):
             resource = resource.replace(
                 '{%s}' % path_key, '${%s}' % path_key
             )
-    except Exception:
+    else:
         return base_resource
 
     # insert path_parameteres by template
@@ -159,9 +160,11 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
             resource = event['resource']
 
         # Fill placeholders in resource path
-        resource = check_update_and_fill_resource_placeholders(
-            resource, event['pathParameters']
-        )
+        if 'pathParameters' in event:
+            resource = check_update_and_fill_resource_placeholders(
+                resource, event['pathParameters']
+            )
+
         path = resource
 
         # Check if a path is set, if so, check if the base path is the same as
