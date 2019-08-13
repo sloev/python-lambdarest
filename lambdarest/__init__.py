@@ -100,10 +100,13 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
     # prepare resource.
     # evaluate from /foo/{key1}/bar/{key2}/{proxy+}
     # to /foo/${key1}/bar/${key2}/{proxy+}
-    for path_key in (path_parameters):
-        resource = resource.replace(
-            '{%s}' % path_key, '${%s}' % path_key
-        )
+    try:
+        for path_key in (path_parameters):
+            resource = resource.replace(
+                '{%s}' % path_key, '${%s}' % path_key
+            )
+    except Exception:
+        return base_resource
 
     # insert path_parameteres by template
     # /foo/${key1}/bar/${key2}/{proxy+} -> /foo/value1/bar/value2/{proxy+}
