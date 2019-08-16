@@ -438,5 +438,3 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(event=input_event)
 
         assert result['statusCode'] == 404
-
-
