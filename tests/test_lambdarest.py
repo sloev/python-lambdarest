@@ -398,3 +398,43 @@ class TestLambdarestFunctions(unittest.TestCase):
             "headers": {},
             "statusDescription": "HTTP OK",
             "isBase64Encoded": False})
+
+    def test_placeholder_filling(self):
+        def my_own_get(_, object_id, foo):
+            return [{"object_id": int(object_id)}, {"foo": foo}]
+
+        self.lambda_handler.handle("get", path="/object/<int:object_id>/props/<string:foo>/get")(my_own_get)
+        ##### TEST #####
+
+        input_event = {
+            "body": '{}',
+            "httpMethod": "GET",
+            "path": "/v1/object/777/props/bar/get",
+            "resource": "/object/{object_id}/props/{foo}/get",
+            "pathParameters": {
+                "object_id": "777",
+                "foo": "bar"
+            }
+        }
+        result = self.lambda_handler(event=input_event)
+        assert result == {"body": '[{"object_id": 777}, {"foo": "bar"}]', "statusCode": 200, "headers": {}}
+
+    def test_incomplete_placeholder_filling(self):
+        def my_own_get_1(_, object_id, foo):
+            return [{"object_id": int(object_id)}, {"foo": foo}]
+
+        self.lambda_handler.handle("get", path="/incomplete_object/<int:object_id>/props/<string:foo>/get")(my_own_get_1)
+        ##### TEST #####
+
+        input_event = {
+            "body": '{}',
+            "httpMethod": "GET",
+            "path": "/v1/object/777/props/bar/get",
+            "resource": "/object/{object_id}/props/{foo}/get",
+            "pathParameters": {
+                "object_id": "777"
+            }
+        }
+        result = self.lambda_handler(event=input_event)
+
+        assert result['statusCode'] == 404

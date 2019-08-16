@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
@@ -82,6 +83,41 @@ def default_error_handler(error, method):
         message=str(error)
     ))
 
+def check_update_and_fill_resource_placeholders(resource, path_parameters):
+    """
+    Prepare resource parameters before routing.
+    In case when resource defined as /path/to/{placeholder}/resource,
+    the router can't find a correct handler.
+    This method inserts path parameters
+    instead of placeholders and returns the result.
+
+    :param resource: Resource path definition
+    :param path_parameters: Path parameters dict
+    :return: resource definition with inserted path parameters
+    """
+    base_resource = resource
+
+    # prepare resource.
+    # evaluate from /foo/{key1}/bar/{key2}/{proxy+}
+    # to /foo/${key1}/bar/${key2}/{proxy+}
+
+    if path_parameters is not None:
+        for path_key in (path_parameters):
+            resource = resource.replace(
+                '{%s}' % path_key, '${%s}' % path_key
+            )
+    else:
+        return base_resource
+
+    # insert path_parameteres by template
+    # /foo/${key1}/bar/${key2}/{proxy+} -> /foo/value1/bar/value2/{proxy+}
+    template = Template(resource)
+    try:
+        resource = template.substitute(**(path_parameters))
+        return resource
+    except KeyError:
+        return base_resource
+
 
 def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder, application_load_balancer=False):
     """Create a lambda handler function with `handle` decorator as attribute
@@ -122,6 +158,13 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
             resource = event['path']
         else:
             resource = event['resource']
+
+        # Fill placeholders in resource path
+        if 'pathParameters' in event:
+            resource = check_update_and_fill_resource_placeholders(
+                resource, event['pathParameters']
+            )
+
         path = resource
 
         # Check if a path is set, if so, check if the base path is the same as
