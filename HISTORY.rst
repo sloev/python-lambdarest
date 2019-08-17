@@ -94,3 +94,9 @@ First OSS release
 
 **features**
 - Add application_load_balancer arg to create_lambda_handler to create lambda_handlers specifically for Application Load Balancer
+
+5.4.0 (2019-08-17)
++++++++++++++++++++
+
+**features**
+- Support of resource path {placeholders} in the middle
