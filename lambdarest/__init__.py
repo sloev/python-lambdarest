@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import functools
 from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
@@ -247,6 +248,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                 "if schema is supplied, load_json needs to be true")
 
         def wrapper(func):
+            @functools.wraps(func)
             def inner(event, *args, **kwargs):
                 if load_json:
                     json_data = {
