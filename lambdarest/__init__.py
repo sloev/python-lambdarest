@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import sys
 from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
+
+if sys.version[0] == '2':
+   from functools32 import wraps
+else:
+   from functools import wraps
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
@@ -247,6 +253,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                 "if schema is supplied, load_json needs to be true")
 
         def wrapper(func):
+            @wraps(func)
             def inner(event, *args, **kwargs):
                 if load_json:
                     json_data = {
