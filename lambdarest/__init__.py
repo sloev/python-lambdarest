@@ -8,9 +8,9 @@ from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 
 if sys.version[0] == '2':
-   from functools32 import wraps
+    from functools32 import wraps
 else:
-   from functools import wraps
+    from functools import wraps
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
