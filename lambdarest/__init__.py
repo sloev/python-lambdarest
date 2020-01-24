@@ -7,8 +7,8 @@ from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 
-if sys.version[0] == '2':
-    from functools32 import wraps
+if sys.version_info.major == 2:
+    from functools32 import wraps # pylint: disable=import-error
 else:
     from functools import wraps
 
