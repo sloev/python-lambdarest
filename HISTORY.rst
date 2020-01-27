@@ -100,3 +100,10 @@ First OSS release
 
 **features**
 - Support of resource path {placeholders} in the middle
+
+5.6.0 (2020-01-27)
++++++++++++++++++++
+
+**features**
+- Add functools.wraps
+- use black for lint
