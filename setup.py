@@ -4,20 +4,9 @@
 from setuptools import setup
 import os
 
+readme = open("README.md", "r").read()
 
-try:
-    from pypandoc import convert
-
-    read_md = lambda f: convert(f, "rst")
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
-    read_md = lambda f: open(f, "r").read()
-
-
-readme = read_md("README.md")
-
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
+history = open("HISTORY.md").read()
 
 requirements = ["jsonschema>=2.5.1", "strict_rfc3339>=0.7", "werkzeug>=0.14.1"]
 
@@ -41,6 +30,7 @@ setup(
     version=metadata["__version__"],
     description="pico framework for aws lambda with optional json schema validation",
     long_description=readme + "\n\n" + history,
+    long_description_content_type="text/markdown",
     author="jgv",
     author_email="jgv@trustpilot.com",
     url="https://github.com/trustpilot/python-lambdarest",
