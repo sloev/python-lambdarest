@@ -106,3 +106,11 @@ First OSS release
 
 - Add functools.wraps 
 - use black for lint
+
+### 6.0.0 (2020-01-27)
+
+**features** 
+
+**This is not a backwards compatible change.**
+
+- drop python 3.4 and 2.7 support

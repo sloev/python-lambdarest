@@ -280,4 +280,11 @@ You can use pytest to run tests against your current Python version. To run test
 See [`setup.py`](setup.py) for test dependencies and install them with .[test].
 
 ## Contributors
+
 @nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @sloev
+
+**Wanna contribute?**
+
+* Create issues or pull requests, no real guidelines given here.
+* Maintainer will review and take care of version bumping and release etc
+* we use `pip install black` for linting

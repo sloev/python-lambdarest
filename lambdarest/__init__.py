@@ -7,10 +7,8 @@ from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 
-if sys.version_info.major == 2:
-    from functools32 import wraps  # pylint: disable=import-error
-else:
-    from functools import wraps
+
+from functools import wraps
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
