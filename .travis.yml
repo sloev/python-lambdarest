@@ -7,9 +7,10 @@ addons:
   - pandoc
 
 python:
-- '2.7'
-- '3.4'
 - '3.5'
+- '3.6'
+- '3.7'
+- '3.8'
 
 install:
 - pip install -U pip
@@ -18,8 +19,8 @@ install:
 - pip install pylint
 
 script:
+- if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then pip install black && black --check .; else echo  "skipping black, since not py37"; fi
 - py.test
-- prospector -M
 
 branches:
   only: master
@@ -43,5 +44,5 @@ deploy:
       tags: false
       branch: master
       repo: trustpilot/python-lambdarest
-      condition: $TRAVIS_PYTHON_VERSION = "2.7"
+      condition: $TRAVIS_PYTHON_VERSION = "3.5"
 

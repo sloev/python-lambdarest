@@ -7,10 +7,8 @@ from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 
-if sys.version_info.major == 2:
-    from functools32 import wraps # pylint: disable=import-error
-else:
-    from functools import wraps
+
+from functools import wraps
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
@@ -39,9 +37,11 @@ class Response(object):
         """
         status_code = self.status_code or 200
         response = {
-            "body": json.dumps(self.body, cls=encoder) if self.body is not None else None,
+            "body": json.dumps(self.body, cls=encoder)
+            if self.body is not None
+            else None,
             "statusCode": status_code,
-            "headers": self.headers or {}
+            "headers": self.headers or {},
         }
         if application_load_balancer:
             response.update(
@@ -50,8 +50,9 @@ class Response(object):
                     #   https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
                     # the value of 200 OK fails:
                     #   https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#respond-to-load-balancer
-                    "statusDescription": self.status_code_description or "HTTP " + HTTP_STATUS_CODES[status_code],
-                    "isBase64Encoded": self.isBase64_encoded
+                    "statusDescription": self.status_code_description
+                    or "HTTP " + HTTP_STATUS_CODES[status_code],
+                    "isBase64Encoded": self.isBase64_encoded,
                 }
             )
         return response
@@ -78,16 +79,13 @@ def __marshall_query_params(value):
 def __json_load_query(query):
     query = query or {}
 
-    return {key: __marshall_query_params(value)
-            for key, value in query.items()}
+    return {key: __marshall_query_params(value) for key, value in query.items()}
 
 
 def default_error_handler(error, method):
     logging_message = "[%s][{status_code}]: {message}" % method
-    logging.exception(logging_message.format(
-        status_code=500,
-        message=str(error)
-    ))
+    logging.exception(logging_message.format(status_code=500, message=str(error)))
+
 
 def check_update_and_fill_resource_placeholders(resource, path_parameters):
     """
@@ -108,10 +106,8 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
     # to /foo/${key1}/bar/${key2}/{proxy+}
 
     if path_parameters is not None:
-        for path_key in (path_parameters):
-            resource = resource.replace(
-                '{%s}' % path_key, '${%s}' % path_key
-            )
+        for path_key in path_parameters:
+            resource = resource.replace("{%s}" % path_key, "${%s}" % path_key)
     else:
         return base_resource
 
@@ -125,7 +121,11 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
         return base_resource
 
 
-def create_lambda_handler(error_handler=default_error_handler, json_encoder=json.JSONEncoder, application_load_balancer=False):
+def create_lambda_handler(
+    error_handler=default_error_handler,
+    json_encoder=json.JSONEncoder,
+    application_load_balancer=False,
+):
     """Create a lambda handler function with `handle` decorator as attribute
 
     example:
@@ -151,24 +151,29 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
 
     def inner_lambda_handler(event, context=None):
         # check if running as "aws lambda proxy"
-        if not isinstance(event, dict) or not all(
-                        key in event for key in __required_keys) or not any(key in event for key in __either_keys):
+        if (
+            not isinstance(event, dict)
+            or not all(key in event for key in __required_keys)
+            or not any(key in event for key in __either_keys)
+        ):
             message = "Bad request, maybe not using Lambda Proxy?"
             logging.error(message)
-            return Response(message, 500).to_json(application_load_balancer=application_load_balancer)
+            return Response(message, 500).to_json(
+                application_load_balancer=application_load_balancer
+            )
 
         # Save context within event for easy access
         event["context"] = context
         # for application load balancers, no api definition is used hence no resource is set so just use path
-        if 'resource' not in event:
-            resource = event['path']
+        if "resource" not in event:
+            resource = event["path"]
         else:
-            resource = event['resource']
+            resource = event["resource"]
 
         # Fill placeholders in resource path
-        if 'pathParameters' in event:
+        if "pathParameters" in event:
             resource = check_update_and_fill_resource_placeholders(
-                resource, event['pathParameters']
+                resource, event["pathParameters"]
             )
 
         path = resource
@@ -182,13 +187,13 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
         # path: /v2/foo/foobar
         # resource: /foo/{name}
         # the /v2 needs to be removed
-        if 'path' in event and event['path'].split('/')[1] != resource.split('/')[1]:
-            path = '/%s' % '/'.join(event['path'].split('/')[2:])
+        if "path" in event and event["path"].split("/")[1] != resource.split("/")[1]:
+            path = "/%s" % "/".join(event["path"].split("/")[2:])
 
         # proxy is a bit weird. We just replace the value in the uri with the
         # actual value provided by apigw, and use that
-        if '{proxy+}' in resource:
-            path = resource.replace('{proxy+}', event['pathParameters']['proxy'])
+        if "{proxy+}" in resource:
+            path = resource.replace("{proxy+}", event["pathParameters"]["proxy"])
 
         method_name = event["httpMethod"].lower()
         func = None
@@ -197,7 +202,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
         logging_message = "[%s][{status_code}]: {message}" % method_name
         try:
             # bind the mapping to an empty server name
-            mapping = url_maps.bind('')
+            mapping = url_maps.bind("")
             rule, kwargs = mapping.match(path, method=method_name, return_rule=True)
             func = rule.endpoint
 
@@ -205,8 +210,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
             if rule.rule == "/<path:path>":
                 kwargs = {}
         except NotFound as e:
-            logging.warning(logging_message.format(
-                status_code=404, message=str(e)))
+            logging.warning(logging_message.format(status_code=404, message=str(e)))
             error_tuple = (str(e), 404)
 
         if func:
@@ -219,23 +223,28 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                     if isinstance(response, tuple):
                         response_len = len(response)
                         if response_len > 3:
-                            raise ValueError(
-                                "Response tuple has more than 3 items")
+                            raise ValueError("Response tuple has more than 3 items")
 
                         # Unpack the tuple, missing items will be defaulted
                         body, status_code, headers = response + (None,) * (
-                            3 - response_len)
+                            3 - response_len
+                        )
 
                     else:  # if response is string, dict, etc.
                         body = response
                     response = Response(body, status_code, headers)
-                return response.to_json(encoder=json_encoder, application_load_balancer=application_load_balancer)
+                return response.to_json(
+                    encoder=json_encoder,
+                    application_load_balancer=application_load_balancer,
+                )
 
             except ValidationError as error:
                 error_description = "Schema[{}] with value {}".format(
-                    "][".join(error.absolute_schema_path), error.message)
-                logging.warning(logging_message.format(
-                    status_code=400, message=error_description))
+                    "][".join(error.absolute_schema_path), error.message
+                )
+                logging.warning(
+                    logging_message.format(status_code=400, message=error_description)
+                )
                 error_tuple = ("Validation Error", 400)
 
             except Exception as error:
@@ -245,12 +254,13 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                     raise
 
         body, status_code = error_tuple
-        return Response(body, status_code).to_json(application_load_balancer=application_load_balancer)
+        return Response(body, status_code).to_json(
+            application_load_balancer=application_load_balancer
+        )
 
     def inner_handler(method_name, path="/", schema=None, load_json=True):
         if schema and not load_json:
-            raise ValueError(
-                "if schema is supplied, load_json needs to be true")
+            raise ValueError("if schema is supplied, load_json needs to be true")
 
         def wrapper(func):
             @wraps(func)
@@ -258,9 +268,7 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                 if load_json:
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
-                        "query": __json_load_query(
-                            event.get("queryStringParameters")
-                        )
+                        "query": __json_load_query(event.get("queryStringParameters")),
                     }
                     event["json"] = json_data
                     if schema:
@@ -269,23 +277,24 @@ def create_lambda_handler(error_handler=default_error_handler, json_encoder=json
                 return func(event, *args, **kwargs)
 
             # if this is a catch all url, make sure that it's setup correctly
-            if path == '*':
+            if path == "*":
                 target_path = "/*"
             else:
                 target_path = path
 
             # replace the * with the werkzeug catch all path
-            if '*' in target_path:
-                target_path = target_path.replace('*', '<path:path>')
+            if "*" in target_path:
+                target_path = target_path.replace("*", "<path:path>")
 
             # make sure the path starts with /
-            if not target_path.startswith('/'):
+            if not target_path.startswith("/"):
                 raise ValueError("Please configure path with starting slash")
 
             # register http handler function
             rule = Rule(target_path, endpoint=inner, methods=[method_name.lower()])
             url_maps.add(rule)
             return inner
+
         return wrapper
 
     lambda_handler = inner_lambda_handler

@@ -10,6 +10,18 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 * Decorator to register functions to handle HTTP methods
 * Optional JSON-schema input validation using same decorator
 
+### External articles / tutorials
+
+* [devgrok.com: Create a Private Microservice Using an Application Load Balancer](http://www.devgrok.com/2019/03/create-private-microservice-using.html)
+  
+  article about how to use **Lambdarest** with **AWS application load balancer**
+
+* [rockset.com: Building a Serverless Microservice Using Rockset and AWS Lambda](https://rockset.com/blog/building-a-serverless-microservice-using-rockset-and-aws-lambda/)
+
+  Article about how to setup Lambdarest in AWS infrastructure
+
+**Other articles? add them [here](https://github.com/trustpilot/python-lambdarest/issues/55)**
+
 ## Installation
 
 Install the package from [PyPI](http://pypi.python.org/pypi/) using [pip](https://pip.pypa.io/):
@@ -268,4 +280,11 @@ You can use pytest to run tests against your current Python version. To run test
 See [`setup.py`](setup.py) for test dependencies and install them with .[test].
 
 ## Contributors
-sloev, svdgraaf, simongarnier, elviejokike, paddie, AlbertoTrinidade, martinbuberl
+
+@nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @sloev
+
+**Wanna contribute?**
+
+* Create issues or pull requests, no real guidelines given here.
+* Maintainer will review and take care of version bumping and release etc
+* we use `pip install black` for linting
