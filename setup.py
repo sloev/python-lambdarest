@@ -11,9 +11,9 @@ history = open("HISTORY.md").read()
 requirements = ["jsonschema>=3.2.0", "strict_rfc3339>=0.7", "werkzeug>=0.16.1"]
 
 test_requirements = [
-    "PyYAML==5.3",
-    "pytest==5.3.4",
-    "mock>=3.0.5",
+    "PyYAML",
+    "pytest",
+    "mock",
     "pytest-readme>=1.0.0",
 ] + requirements
 
