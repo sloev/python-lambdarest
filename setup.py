@@ -8,12 +8,12 @@ readme = open("README.md", "r").read()
 
 history = open("HISTORY.md").read()
 
-requirements = ["jsonschema>=2.5.1", "strict_rfc3339>=0.7", "werkzeug>=0.14.1"]
+requirements = ["jsonschema>=3.2.0", "strict_rfc3339>=0.7", "werkzeug>=0.16.1"]
 
 test_requirements = [
-    "PyYAML==3.11",
-    "pytest==2.9.2",
-    "mock>=2.0.0",
+    "PyYAML==5.3",
+    "pytest==5.3.4",
+    "mock>=3.0.5",
     "pytest-readme>=1.0.0",
 ] + requirements
 
