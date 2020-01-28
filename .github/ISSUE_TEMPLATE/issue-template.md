@@ -1,6 +1,6 @@
 ---
-name: Issue template
-about: Describe this issue template's purpose here.
+name: New issue
+about: Lambdarest issue template
 title: "[BUG] fix pr"
 labels: ''
 assignees: sloev
