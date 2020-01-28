@@ -283,8 +283,6 @@ See [`setup.py`](setup.py) for test dependencies and install them with .[test].
 
 @nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @sloev
 
-**Wanna contribute?**
+[Wanna contribute?](./CONTRIBUTING.md)
 
-* Create issues or pull requests, no real guidelines given here.
-* Maintainer will review and take care of version bumping and release etc
-* we use `pip install black` for linting
+And by the way, we have a [Code Of Friendlyhood!](./CODE_OF_CONDUCT.md)
