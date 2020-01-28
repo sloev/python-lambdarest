@@ -114,3 +114,9 @@ First OSS release
 **This is not a backwards compatible change.**
 
 - drop python 3.4 and 2.7 support
+
+### 6.0.1 (2020-01-28)
+
+**features** 
+
+- remember HISTORY.md in manifest file
