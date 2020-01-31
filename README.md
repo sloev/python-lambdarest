@@ -14,11 +14,11 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 
 * [devgrok.com: Create a Private Microservice Using an Application Load Balancer](http://www.devgrok.com/2019/03/create-private-microservice-using.html)
   
-  article about how to use **Lambdarest** with **AWS application load balancer**
+  Article about how to use **lambdarest** with **AWS Application Load Balancer**
 
 * [rockset.com: Building a Serverless Microservice Using Rockset and AWS Lambda](https://rockset.com/blog/building-a-serverless-microservice-using-rockset-and-aws-lambda/)
 
-  Article about how to setup Lambdarest in AWS infrastructure
+  Article about how to set up **lambdarest** in AWS infrastructure
 
 **Other articles? add them [here](https://github.com/trustpilot/python-lambdarest/issues/55)**
 
@@ -104,7 +104,7 @@ assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
 
 ### Query Params
 
-Query params are also analyzed and validatable with JSON schemas.
+Query parameters are also analyzed and validatable with JSON schemas.
 Query arrays are expected to be comma separated, all numbers are converted to floats.
 
 ```python
