@@ -120,3 +120,9 @@ First OSS release
 **features** 
 
 - remember HISTORY.md in manifest file
+
+### 7.0.0 (2020-02-12)
+
+**This is not a backwards compatible change.**
+
+- don't json.dumps the body if it's already a str (pr #58)

@@ -281,7 +281,7 @@ See [`setup.py`](setup.py) for test dependencies and install them with .[test].
 
 ## Contributors
 
-@nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @sloev
+@nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @adamelmore, @sloev
 
 [Wanna contribute?](./CONTRIBUTING.md)
 
