@@ -100,7 +100,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result, {"body": '"foo"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
         post_mock.assert_called_with(assert_event)
 
     def test_schema_valid(self):
@@ -124,11 +124,11 @@ class TestLambdarestFunctions(unittest.TestCase):
             post_mock
         )  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result, {"body": '"foo"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
         post_mock.assert_called_with(assert_event)
 
     def test_schema_invalid(self):
-        json_body = dict(my_integer="this is not an integer",)
+        json_body = dict(my_integer="this is not an integer")
         post_schema = {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "type": "object",
@@ -151,11 +151,11 @@ class TestLambdarestFunctions(unittest.TestCase):
         )  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         self.assertEqual(
-            result, {"body": '"Validation Error"', "statusCode": 400, "headers": {}}
+            result, {"body": "Validation Error", "statusCode": 400, "headers": {}}
         )
 
     def test_that_it_returns_bad_request_if_not_given_lambda_proxy_input(self):
-        json_body = dict(my_integer="this is not an integer",)
+        json_body = dict(my_integer="this is not an integer")
 
         event = json.dumps(json_body)
 
@@ -165,14 +165,14 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.assertEqual(
             result,
             {
-                "body": '"Bad request, maybe not using Lambda Proxy?"',
+                "body": "Bad request, maybe not using Lambda Proxy?",
                 "statusCode": 500,
                 "headers": {},
             },
         )
 
     def test_that_it_unpacks_and_validates_query_params(self):
-        json_body = dict(my_integer="this is not an integer",)
+        json_body = dict(my_integer="this is not an integer")
         queryStringParameters = dict(
             foo='"keys"', bar='{"baz":20}', baz="1,2,3", apples="1"
         )
@@ -207,13 +207,13 @@ class TestLambdarestFunctions(unittest.TestCase):
             post_mock
         )  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result, {"body": '"foobar"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result, {"body": "foobar", "statusCode": 200, "headers": {}})
 
     def test_that_it_works_without_body_or_queryStringParameters(self):
         post_mock = mock.Mock(return_value="foo")
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result, {"body": '"foo"', "headers": {}, "statusCode": 200})
+        self.assertEqual(result, {"body": "foo", "headers": {}, "statusCode": 200})
 
     def test_that_specified_path_works(self):
         json_body = {}
@@ -229,11 +229,11 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         self.event["resource"] = "/foo/bar"
         result1 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result1, {"body": '"foo"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result1, {"body": "foo", "statusCode": 200, "headers": {}})
 
         self.event["resource"] = "/bar/foo"
         result2 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result2, {"body": '"bar"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result2, {"body": "bar", "statusCode": 200, "headers": {}})
 
     def test_that_apigw_with_basepath_works(self):
         json_body = {}
@@ -248,7 +248,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.event["path"] = "/v1/foo/bar"
         self.event["resource"] = "/foo/bar"
         result1 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result1, {"body": '"foo"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result1, {"body": "foo", "statusCode": 200, "headers": {}})
 
     def test_that_uppercase_works(self):
         json_body = {}
@@ -265,15 +265,11 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         self.event["resource"] = "/foo/bar/foobar"
         result1 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(
-            result1, {"body": '"foobar"', "statusCode": 200, "headers": {}}
-        )
+        self.assertEqual(result1, {"body": "foobar", "statusCode": 200, "headers": {}})
 
         self.event["resource"] = "/foo/bar/FOOBAR"
         result2 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(
-            result2, {"body": '"FOOBAR"', "statusCode": 200, "headers": {}}
-        )
+        self.assertEqual(result2, {"body": "FOOBAR", "statusCode": 200, "headers": {}})
 
     def test_that_apigw_with_proxy_param_works(self):
         json_body = {}
@@ -291,7 +287,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.event["pathParameters"] = {"proxy": "foobar"}
         self.event["resource"] = "/foo/{proxy+}"
         result1 = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result1, {"body": '"foo"', "statusCode": 200, "headers": {}})
+        self.assertEqual(result1, {"body": "foo", "statusCode": 200, "headers": {}})
 
     def test_that_no_path_specified_match_all(self):
         random.seed(time.mktime(datetime.now().timetuple()))
@@ -309,9 +305,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             # test with a non-deterministic path
             self.event["resource"] = "/foo/{}/".format(random.choice(r))
             result = self.lambda_handler(self.event, self.context)
-            self.assertEqual(
-                result, {"body": '"foo"', "statusCode": 200, "headers": {}}
-            )
+            self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
 
     def test_exception_in_handler_should_be_reraised(self):
         json_body = {}
@@ -356,7 +350,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.assertEqual(
             result1,
             {
-                "body": '"foo:foobar"',
+                "body": "foo:foobar",
                 "statusCode": 200,
                 "headers": {},
                 "statusDescription": "HTTP OK",
@@ -406,3 +400,18 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(event=input_event)
 
         assert result["statusCode"] == 404
+
+    def test_that_html_is_not_surrounded_by_double_quotes(self):
+        post_mock = mock.Mock(
+            return_value="<html><head></head><body>Hello world!</body></html>"
+        )
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result,
+            {
+                "body": "<html><head></head><body>Hello world!</body></html>",
+                "headers": {},
+                "statusCode": 200,
+            },
+        )
