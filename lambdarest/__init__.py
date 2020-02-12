@@ -36,10 +36,10 @@ class Response(object):
         Note: method name is slightly misleading, should be populate_response or with_defaults etc
         """
         status_code = self.status_code or 200
+        # if it's already a str, we don't need json.dumps
+        do_json_dumps = self.body and not isinstance(self.body, str)
         response = {
-            "body": json.dumps(self.body, cls=encoder)
-            if self.body is not None
-            else None,
+            "body": json.dumps(self.body, cls=encoder) if do_json_dumps else self.body,
             "statusCode": status_code,
             "headers": self.headers or {},
         }

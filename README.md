@@ -13,7 +13,7 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 ### External articles / tutorials
 
 * [devgrok.com: Create a Private Microservice Using an Application Load Balancer](http://www.devgrok.com/2019/03/create-private-microservice-using.html)
-  
+
   Article about how to use **lambdarest** with **AWS Application Load Balancer**
 
 * [rockset.com: Building a Serverless Microservice Using Rockset and AWS Lambda](https://rockset.com/blog/building-a-serverless-microservice-using-rockset-and-aws-lambda/)
@@ -99,7 +99,7 @@ invalid_input_event = {
     "resource": "/with-schema/"
 }
 result = lambda_handler(event=invalid_input_event)
-assert result == {"body": '"Validation Error"', "statusCode": 400, "headers":{}}
+assert result == {"body": 'Validation Error', "statusCode": 400, "headers":{}}
 ```
 
 ### Query Params
