@@ -274,10 +274,16 @@ Because of python unittests leaky test-cases it seems like you shall beware of [
 
 ## Tests
 
-You can use pytest to run tests against your current Python version. To run tests for current python version run `pytest`
+This package uses Make to install requirements and run tests.
 
+Use the following commands to install requirements and run test-suite:
 
-See [`setup.py`](setup.py) for test dependencies and install them with .[test].
+```
+$ make setup
+$ make test
+```
+
+For more info see [Contributing...](./CONTRIBUTING.md)
 
 ## Contributors
 
