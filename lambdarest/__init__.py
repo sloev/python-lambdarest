@@ -43,6 +43,10 @@ class Response(object):
             "statusCode": status_code,
             "headers": self.headers or {},
         }
+        # if body is None, remove the key
+        if response.get("body") == None:
+            response.pop("body")
+
         if application_load_balancer:
             response.update(
                 {
@@ -230,7 +234,15 @@ def create_lambda_handler(
                             3 - response_len
                         )
 
-                    else:  # if response is string, dict, etc.
+                    elif isinstance(response, dict) and all(
+                        key in ["body", "statusCode", "headers"]
+                        for key in response.keys()
+                    ):
+                        body = response.get("body")
+                        status_code = response.get("statusCode") or status_code
+                        headers = response.get("headers") or headers
+
+                    else:  # if response is string, int, etc.
                         body = response
                     response = Response(body, status_code, headers)
                 return response.to_json(
