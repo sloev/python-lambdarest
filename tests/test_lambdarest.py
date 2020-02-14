@@ -448,10 +448,15 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("post")(post_mock)  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         self.assertEqual(
-            result,
-            {
-                "body": '{"body": "hurts", "foo": "bar", "more": "data"}',
-                "headers": {},
-                "statusCode": 200,
-            },
+            json.loads(result["body"]), {"foo": "bar", "body": "hurts", "more": "data"}
         )
+        self.assertEqual(result["headers"], {})
+        self.assertEqual(result["statusCode"], 200)
+
+    def test_that_json_encoding_body_list(self):
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(json.loads(result["body"]), [{"foo": "bar"}])
+        self.assertEqual(result["headers"], {})
+        self.assertEqual(result["statusCode"], 200)
