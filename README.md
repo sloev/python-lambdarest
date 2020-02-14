@@ -1,6 +1,7 @@
 # lambdarest
 
-[![Build Status](https://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
+[![Build Status](https://travis-ci.org/trustpilot/python-lambdarest.svg?branch=master)](https://travis-ci.org/trustpilot/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme)
+
 
 Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
@@ -274,10 +275,16 @@ Because of python unittests leaky test-cases it seems like you shall beware of [
 
 ## Tests
 
-You can use pytest to run tests against your current Python version. To run tests for current python version run `pytest`
+This package uses Make to install requirements and run tests.
 
+Use the following commands to install requirements and run test-suite:
 
-See [`setup.py`](setup.py) for test dependencies and install them with .[test].
+```
+
+$ make setup test
+```
+
+For more info see [Contributing...](./CONTRIBUTING.md)
 
 ## Contributors
 

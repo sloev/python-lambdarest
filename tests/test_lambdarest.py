@@ -415,3 +415,48 @@ class TestLambdarestFunctions(unittest.TestCase):
                 "statusCode": 200,
             },
         )
+
+    def test_that_standard_dict_responses_are_returned_as_is(self):
+        post_mock = mock.Mock(
+            return_value={"body": "something went wrong", "statusCode": 500}
+        )
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result, {"body": "something went wrong", "headers": {}, "statusCode": 500}
+        )
+
+    def test_that_standard_dict_responses_without_a_body_are_returned_as_is(self):
+        post_mock = mock.Mock(
+            return_value={
+                "statusCode": 302,
+                "headers": {"Location": "https://example.com"},
+            }
+        )
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result, {"headers": {"Location": "https://example.com"}, "statusCode": 302}
+        )
+
+    def test_that_dict_responses_that_happen_to_have_a_body_key_retain_previous_behavior(
+        self,
+    ):
+        post_mock = mock.Mock(
+            return_value={"foo": "bar", "body": "hurts", "more": "data"}
+        )
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            json.loads(result["body"]), {"foo": "bar", "body": "hurts", "more": "data"}
+        )
+        self.assertEqual(result["headers"], {})
+        self.assertEqual(result["statusCode"], 200)
+
+    def test_that_json_encoding_body_list(self):
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(json.loads(result["body"]), [{"foo": "bar"}])
+        self.assertEqual(result["headers"], {})
+        self.assertEqual(result["statusCode"], 200)

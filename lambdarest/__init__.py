@@ -39,10 +39,16 @@ class Response(object):
         # if it's already a str, we don't need json.dumps
         do_json_dumps = self.body and not isinstance(self.body, str)
         response = {
-            "body": json.dumps(self.body, cls=encoder) if do_json_dumps else self.body,
+            "body": json.dumps(self.body, cls=encoder, sort_keys=True)
+            if do_json_dumps
+            else self.body,
             "statusCode": status_code,
             "headers": self.headers or {},
         }
+        # if body is None, remove the key
+        if response.get("body") == None:
+            response.pop("body")
+
         if application_load_balancer:
             response.update(
                 {
@@ -230,7 +236,15 @@ def create_lambda_handler(
                             3 - response_len
                         )
 
-                    else:  # if response is string, dict, etc.
+                    elif isinstance(response, dict) and all(
+                        key in ["body", "statusCode", "headers"]
+                        for key in response.keys()
+                    ):
+                        body = response.get("body")
+                        status_code = response.get("statusCode") or status_code
+                        headers = response.get("headers") or headers
+
+                    else:  # if response is string, int, etc.
                         body = response
                     response = Response(body, status_code, headers)
                 return response.to_json(

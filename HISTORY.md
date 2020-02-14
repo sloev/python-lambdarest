@@ -126,3 +126,9 @@ First OSS release
 **This is not a backwards compatible change.**
 
 - don't json.dumps the body if it's already a str (pr #58)
+
+### 8.0.0 (2020-02-14)
+
+**This is not a backwards compatible change.**
+
+- minimally process standard lambda (dict) responses (pr #59)

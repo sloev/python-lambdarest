@@ -2,25 +2,30 @@ sudo: required
 
 language: python
 
-addons:
-  apt_packages:
-  - pandoc
-
-python:
-- '3.5'
-- '3.6'
-- '3.7'
-- '3.8'
+jobs:
+  include:
+    - python: 3.5
+      name: python 3.5 pytest
+      env: TOXENV=py35
+    - python: 3.6
+      name: python 3.6 pytest
+      env: TOXENV=py36
+    - python: 3.7
+      name: python 3.7 pytest
+      env: TOXENV=py37
+    - python: 3.8
+      name: python 3.8 pytest
+      env: TOXENV=py38
+    - python: 3.7
+      name: python 3.7 black lint check
+      env: TOXENV=black
 
 install:
 - pip install -U pip
-- pip install pypandoc
-- pip install .[test]
-- pip install pylint
+- pip install tox==3.14.3 tox-travis==0.12
 
 script:
-- if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then pip install black && black --check .; else echo  "skipping black, since not py37"; fi
-- py.test
+- tox
 
 branches:
   only: master
@@ -44,5 +49,5 @@ deploy:
       tags: false
       branch: master
       repo: trustpilot/python-lambdarest
-      condition: $TRAVIS_PYTHON_VERSION = "3.5"
+      condition: $TRAVIS_PYTHON_VERSION = "3.7"
 
