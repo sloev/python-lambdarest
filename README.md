@@ -279,8 +279,7 @@ This package uses Make to install requirements and run tests.
 Use the following commands to install requirements and run test-suite:
 
 ```
-$ make setup
-$ make test
+$ make setup test
 ```
 
 For more info see [Contributing...](./CONTRIBUTING.md)
