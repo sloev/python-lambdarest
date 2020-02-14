@@ -450,7 +450,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.assertEqual(
             result,
             {
-                "body": '{"foo": "bar", "body": "hurts", "more": "data"}',
+                "body": '{"body": "hurts", "foo": "bar", "more": "data"}',
                 "headers": {},
                 "statusCode": 200,
             },
