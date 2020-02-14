@@ -440,7 +440,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         )
 
     def test_that_dict_responses_that_happen_to_have_a_body_key_retain_previous_behavior(
-        self
+        self,
     ):
         post_mock = mock.Mock(
             return_value={"foo": "bar", "body": "hurts", "more": "data"}
