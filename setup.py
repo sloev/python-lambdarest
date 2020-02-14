@@ -23,7 +23,7 @@ exec(open(version_filename).read(), None, metadata)
 setup(
     name="lambdarest",
     version=metadata["__version__"],
-    description="pico framework for aws lambda with optional json schema validation",
+    description="mature micro web framework for AWS Lambda",
     long_description=readme + "\n\n" + history,
     long_description_content_type="text/markdown",
     author=metadata["__author__"],

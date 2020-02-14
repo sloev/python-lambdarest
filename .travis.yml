@@ -2,16 +2,23 @@ sudo: required
 
 language: python
 
-matrix:
+jobs:
   include:
     - python: 3.5
+      name: python 3.5 pytest
       env: TOXENV=py35
     - python: 3.6
+      name: python 3.6 pytest
       env: TOXENV=py36
     - python: 3.7
+      name: python 3.7 pytest
       env: TOXENV=py37
     - python: 3.8
+      name: python 3.8 pytest
       env: TOXENV=py38
+    - python: 3.7
+      name: python 3.7 black lint check
+      env: TOXENV=black
 
 install:
 - pip install -U pip
