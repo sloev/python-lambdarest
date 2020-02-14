@@ -15,7 +15,7 @@ matrix:
 
 install:
 - pip install -U pip
-- pip install tox==3.14.3
+- pip install tox==3.14.3 tox-travis==0.12
 
 script:
 - tox
