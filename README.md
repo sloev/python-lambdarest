@@ -160,7 +160,6 @@ def my_own_get(event):
     return {"this": "will be json dumped"}
 
 
-
 ##### TEST #####
 
 
