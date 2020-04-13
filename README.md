@@ -250,6 +250,8 @@ If you're using a Lambda authorizer, you can pass authorization scopes as input 
 
 This is useful when using the API Gateway with a Lambda authorizer and have the Lambda authorizer return in a scopes json object the permissions (scopes) the caller has access to. In your Lambda function you can specify what scopes the caller should have to call that function. If the requested scope was not provided by the Lambda authorizer, a 403 error code is given.
 
+The API gateway has the limitation it can only pass primitive data types from a Lambda authorizer function. The scopes list therefore needs to be json encoded by the authorizer function.
+
 ```python
 from lambdarest import lambda_handler
 
@@ -263,6 +265,11 @@ input_event = {
     "body": '{}',
     "httpMethod": "GET",
     "resource": "/"
+	"requestContext": {
+        "authorizer": {
+            "scopes": '["myresource.read"]'
+        }
+    }
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
