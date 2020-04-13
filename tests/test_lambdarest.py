@@ -473,7 +473,11 @@ class TestLambdarestFunctions(unittest.TestCase):
 
     def test_scopes_A(self):
         post_mock = mock.Mock(return_value=[{"foo": "bar"}])
-        self.lambda_handler.handle("post", scopes=['resource.method1', 'resource3.method2'])(post_mock)  # decorate mock
+        self.lambda_handler.handle(
+            "post", scopes=["resource.method1", "resource3.method2"]
+        )(
+            post_mock
+        )  # decorate mock
         result = self.lambda_handler(self.event, self.context)
         self.assertEqual(
             result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
@@ -489,9 +493,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": "[]"
-                },
+                "authorizer": {"scopes": "[]"},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -517,7 +519,11 @@ class TestLambdarestFunctions(unittest.TestCase):
             "isBase64Encoded": False,
         }
         post_mock = mock.Mock(return_value=[{"foo": "bar"}])
-        self.lambda_handler.handle("post", scopes=['resource.method1', 'resource3.method2'])(post_mock)  # decorate mock
+        self.lambda_handler.handle(
+            "post", scopes=["resource.method1", "resource3.method2"]
+        )(
+            post_mock
+        )  # decorate mock
         result = self.lambda_handler(event_with_empty_scopes, self.context)
         self.assertEqual(
             result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
@@ -533,9 +539,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": '["resource1.method2"]'
-                },
+                "authorizer": {"scopes": '["resource1.method2"]'},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -561,7 +565,9 @@ class TestLambdarestFunctions(unittest.TestCase):
             "isBase64Encoded": False,
         }
         post_mock = mock.Mock(return_value=[{"foo": "bar"}])
-        self.lambda_handler.handle("post", scopes=['resource1.method2'])(post_mock)  # decorate mock
+        self.lambda_handler.handle("post", scopes=["resource1.method2"])(
+            post_mock
+        )  # decorate mock
         result = self.lambda_handler(event_with_single_scope, self.context)
         self.assertEqual(
             result, {"body": '[{"foo": "bar"}]', "statusCode": 200, "headers": {}}
@@ -577,9 +583,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": '["resource1.method2", "resouce2.method3"]'
-                },
+                "authorizer": {"scopes": '["resource1.method2", "resouce2.method3"]'},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -621,9 +625,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": '["resource1.method2", "resouce2.method3"]'
-                },
+                "authorizer": {"scopes": '["resource1.method2", "resouce2.method3"]'},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -649,7 +651,11 @@ class TestLambdarestFunctions(unittest.TestCase):
             "isBase64Encoded": False,
         }
         post_mock = mock.Mock(return_value=[{"foo": "bar"}])
-        self.lambda_handler.handle("post", scopes=["resouce2.method3", "resouce3.method1"])(post_mock)  # decorate mock
+        self.lambda_handler.handle(
+            "post", scopes=["resouce2.method3", "resouce3.method1"]
+        )(
+            post_mock
+        )  # decorate mock
         result = self.lambda_handler(event_with_multiple_scopes, self.context)
         self.assertEqual(
             result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
@@ -665,9 +671,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": "{[invalid json}"
-                },
+                "authorizer": {"scopes": "{[invalid json}"},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -709,9 +713,7 @@ class TestLambdarestFunctions(unittest.TestCase):
             "stageVariables": None,
             "requestContext": {
                 "accountId": "1234123542134",
-                "authorizer": {
-                    "scopes": "{[invalid json}"
-                },
+                "authorizer": {"scopes": "{[invalid json}"},
                 "resourceId": "erd49w",
                 "stage": "test-invoke-stage",
                 "requestId": "test-invoke-request",
@@ -737,7 +739,9 @@ class TestLambdarestFunctions(unittest.TestCase):
             "isBase64Encoded": False,
         }
         post_mock = mock.Mock(return_value=[{"foo": "bar"}])
-        self.lambda_handler.handle("post", scopes=["resource1.method2"])(post_mock)  # decorate mock
+        self.lambda_handler.handle("post", scopes=["resource1.method2"])(
+            post_mock
+        )  # decorate mock
         result = self.lambda_handler(event_with_invalid_scopes, self.context)
         self.assertEqual(
             result, {"body": "Permission denied", "statusCode": 403, "headers": {}}

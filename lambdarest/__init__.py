@@ -63,8 +63,10 @@ class Response(object):
             )
         return response
 
+
 class ScopeMissing(Exception):
     pass
+
 
 def __float_cast(value):
     try:
@@ -299,7 +301,9 @@ def create_lambda_handler(
                         validate(json_data, schema, **__validate_kwargs)
 
                 try:
-                    provided_scopes = json.loads(event["requestContext"]["authorizer"]["scopes"])
+                    provided_scopes = json.loads(
+                        event["requestContext"]["authorizer"]["scopes"]
+                    )
                 except KeyError:
                     provided_scopes = []
                 except json.decoder.JSONDecodeError:
