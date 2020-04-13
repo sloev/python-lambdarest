@@ -254,7 +254,7 @@ The API gateway has the limitation it can only pass primitive data types from a 
 ```python
 from lambdarest import lambda_handler
 
-@lambda_handler.handle("get", scopes="myresource.read")
+@lambda_handler.handle("get", scopes=["myresource.read"])
 def my_own_get(event):
     return {"this": "will be json dumped"}
 
