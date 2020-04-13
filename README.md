@@ -160,6 +160,7 @@ def my_own_get(event):
     return {"this": "will be json dumped"}
 
 
+
 ##### TEST #####
 
 
@@ -241,6 +242,41 @@ input_event = {
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
+```
+
+### Scopes
+
+If you're using a Lambda authorizer, you can pass authorization scopes as input into your Lambda function.
+
+This is useful when using the API Gateway with a Lambda authorizer and have the Lambda authorizer return in a scopes json object the permissions (scopes) the caller has access to. In your Lambda function you can specify what scopes the caller should have to call that function. If the requested scope was not provided by the Lambda authorizer, a 403 error code is given.
+
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", scopes="myresource.read")
+def my_own_get(event):
+    return {"this": "will be json dumped"}
+
+##### TEST (permission granted) #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+```
+	
+##### TEST (permission denied) #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": "Permission denied", "statusCode": 403, "headers":{}}
 ```
 
 ## Use it with AWS Application Load Balancer
