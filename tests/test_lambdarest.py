@@ -460,3 +460,285 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.assertEqual(json.loads(result["body"]), [{"foo": "bar"}])
         self.assertEqual(result["headers"], {})
         self.assertEqual(result["statusCode"], 200)
+
+    # test matrix for scopes
+    #                     Scopes requested
+    #                   none | single | multiple
+    # Scopes provided:
+    #         missing        |        |   A
+    #            none    B   |        |
+    #          single        |   C    |
+    #        multiple    D   |        |   E
+    #         invalid    F   |   G    |
+
+    def test_scopes_A(self):
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=['resource.method1', 'resource3.method2'])(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
+        )
+
+    def test_scopes_B(self):
+        event_with_empty_scopes = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": "[]"
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=['resource.method1', 'resource3.method2'])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_empty_scopes, self.context)
+        self.assertEqual(
+            result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
+        )
+
+    def test_scopes_C(self):
+        event_with_single_scope = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": '["resource1.method2"]'
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=['resource1.method2'])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_single_scope, self.context)
+        self.assertEqual(
+            result, {"body": '[{"foo": "bar"}]', "statusCode": 200, "headers": {}}
+        )
+
+    def test_scopes_D(self):
+        event_with_multiple_scopes = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": '["resource1.method2", "resouce2.method3"]'
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=[])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_multiple_scopes, self.context)
+        self.assertEqual(
+            result, {"body": '[{"foo": "bar"}]', "statusCode": 200, "headers": {}}
+        )
+
+    def test_scopes_E(self):
+        event_with_multiple_scopes = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": '["resource1.method2", "resouce2.method3"]'
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=["resouce2.method3", "resouce3.method1"])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_multiple_scopes, self.context)
+        self.assertEqual(
+            result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
+        )
+
+    def test_scopes_F(self):
+        event_with_invalid_scopes = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": "{[invalid json}"
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=[])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_invalid_scopes, self.context)
+        self.assertEqual(
+            result, {"body": '[{"foo": "bar"}]', "statusCode": 200, "headers": {}}
+        )
+
+    def test_scopes_G(self):
+        event_with_invalid_scopes = {
+            "resource": "/",
+            "httpMethod": "POST",
+            "headers": None,
+            "queryStringParameters": None,
+            "pathParameters": None,
+            "stageVariables": None,
+            "requestContext": {
+                "accountId": "1234123542134",
+                "authorizer": {
+                    "scopes": "{[invalid json}"
+                },
+                "resourceId": "erd49w",
+                "stage": "test-invoke-stage",
+                "requestId": "test-invoke-request",
+                "identity": {
+                    "cognitoIdentityPoolId": None,
+                    "accountId": "23424534543",
+                    "cognitoIdentityId": None,
+                    "caller": "asdfasdfasfdasfdas",
+                    "apiKey": "asdfasdfasdfas",
+                    "sourceIp": "127.0.0.1",
+                    "accessKey": "asdfasdfasdfasfd",
+                    "cognitoAuthenticationType": None,
+                    "cognitoAuthenticationProvider": None,
+                    "userArn": "arn:aws:iam::123214323",
+                    "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+                    "user": "asdfsadsfads",
+                },
+                "resourcePath": "/test",
+                "httpMethod": "POST",
+                "apiId": "90o718c6bk",
+            },
+            "body": None,
+            "isBase64Encoded": False,
+        }
+        post_mock = mock.Mock(return_value=[{"foo": "bar"}])
+        self.lambda_handler.handle("post", scopes=["resource1.method2"])(post_mock)  # decorate mock
+        result = self.lambda_handler(event_with_invalid_scopes, self.context)
+        self.assertEqual(
+            result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
+        )
