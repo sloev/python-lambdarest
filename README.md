@@ -264,8 +264,8 @@ def my_own_get(event):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "resource": "/"
-	"requestContext": {
+    "resource": "/",
+    "requestContext": {
         "authorizer": {
             "scopes": '["myresource.read"]'
         }
