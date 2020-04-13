@@ -266,7 +266,6 @@ input_event = {
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
-```
 	
 ##### TEST (permission denied) #####
 
