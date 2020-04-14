@@ -64,6 +64,10 @@ class Response(object):
         return response
 
 
+class ScopeMissing(Exception):
+    pass
+
+
 def __float_cast(value):
     try:
         return float(value)
@@ -261,6 +265,13 @@ def create_lambda_handler(
                 )
                 error_tuple = ("Validation Error", 400)
 
+            except ScopeMissing as error:
+                error_description = "Permission denied"
+                logging.warning(
+                    logging_message.format(status_code=403, message=error_description)
+                )
+                error_tuple = (error_description, 403)
+
             except Exception as error:
                 if error_handler:
                     error_handler(error, method_name)
@@ -272,7 +283,7 @@ def create_lambda_handler(
             application_load_balancer=application_load_balancer
         )
 
-    def inner_handler(method_name, path="/", schema=None, load_json=True):
+    def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=None):
         if schema and not load_json:
             raise ValueError("if schema is supplied, load_json needs to be true")
 
@@ -288,6 +299,21 @@ def create_lambda_handler(
                     if schema:
                         # jsonschema.validate using given schema
                         validate(json_data, schema, **__validate_kwargs)
+
+                try:
+                    provided_scopes = json.loads(
+                        event["requestContext"]["authorizer"]["scopes"]
+                    )
+                except KeyError:
+                    provided_scopes = []
+                except json.decoder.JSONDecodeError:
+                    # Ignore passed scopes if it isn't properly json encoded
+                    provided_scopes = []
+
+                for scope in scopes or []:
+                    if scope not in provided_scopes:
+                        raise ScopeMissing("Scope: '{}' is missing".format(scope))
+
                 return func(event, *args, **kwargs)
 
             # if this is a catch all url, make sure that it's setup correctly

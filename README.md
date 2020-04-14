@@ -243,6 +243,58 @@ result = lambda_handler(event=input_event)
 assert result == {"body": '{"path": "bar/baz"}', "statusCode": 200, "headers":{}}
 ```
 
+### Scopes
+
+If you're using a Lambda authorizer, you can pass authorization scopes as input into your Lambda function.
+
+This is useful when using the API Gateway with a Lambda authorizer and have the Lambda authorizer return in a scopes json object the permissions (scopes) the caller has access to. In your Lambda function you can specify what scopes the caller should have to call that function. If the requested scope was not provided by the Lambda authorizer, a 403 error code is given.
+
+The API gateway has the limitation it can only pass primitive data types from a Lambda authorizer function. The scopes list therefore needs to be json encoded by the authorizer function.
+
+To use this, add a scopes attribute to the handler with the list of scopes your function requires. They will be verified from the requestContext.authorizer.scopes attribute from the Lambda authorizer.
+
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/private1", scopes=["myresource.read"])
+def my_own_get(event):
+    return {"this": "will be json dumped"}
+
+##### TEST #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/private1",
+    "requestContext": {
+        "authorizer": {
+            "scopes": '["myresource.read"]'
+        }
+    }
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+```
+When no scopes are provided by the authorizer but are still requested by your function, a permission denied error is returned.
+```python
+from lambdarest import lambda_handler
+
+@lambda_handler.handle("get", path="/private2", scopes=["myresource.read"])
+def my_own_get(event):
+    return {"this": "will be json dumped"}
+
+##### TEST #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/private2"
+}
+result = lambda_handler(event=input_event)
+print(result)
+assert result == {"body": "Permission denied", "statusCode": 403, "headers":{}}
+```
+
 ## Use it with AWS Application Load Balancer
 
 In order to use it with Application Load Balancer you need to create your own lambda_handler and not use the singleton:
