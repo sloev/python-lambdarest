@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "lambdarest"
+version = "9.0.0"
+description = "flask like web framework for AWS Lambda"
+authors = ["Johannes Valbjørn <jgv@trustpilot.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/trustpilot/python-lambdarest"
+keywords = ["lambda", "aws", "awslambda", "flask", "web", "jsonschema", "werkzeug"]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+jsonschema = "^3.2.0"
+strict_rfc3339 = "^0.7"
+werkzeug = "0.16.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.4.1"
+PyYaml = "^5.3.1"
+mock = "^4.0.2"
+pytest-readme = "^1.0.0"
+taskipy = "^1.2.1"
+black = "^19.10b0"
+
+[tool.taskipy.tasks]
+test = "rm -f test_readme.py && pytest --doctest-modules -vvv"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

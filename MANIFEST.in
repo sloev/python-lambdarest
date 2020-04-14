@@ -1,8 +1,0 @@
-include HISTORY.md
-include README.md
-
-recursive-include tests *
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
-
-recursive-include docs *.rst conf.py *.jpg *.png *.gif
