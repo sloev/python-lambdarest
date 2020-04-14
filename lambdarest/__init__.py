@@ -283,7 +283,7 @@ def create_lambda_handler(
             application_load_balancer=application_load_balancer
         )
 
-    def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=[]):
+    def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=None):
         if schema and not load_json:
             raise ValueError("if schema is supplied, load_json needs to be true")
 
@@ -309,9 +309,10 @@ def create_lambda_handler(
                 except json.decoder.JSONDecodeError:
                     # Ignore passed scopes if it isn't properly json encoded
                     provided_scopes = []
-                for s in scopes:
-                    if s not in provided_scopes:
-                        raise ScopeMissing("Scope " + s + " missing")
+
+                for scope in scopes or []:
+                    if scope not in provided_scopes:
+                        raise ScopeMissing("Scope: '{}' is missing".format(scope))
 
                 return func(event, *args, **kwargs)
 
