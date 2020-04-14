@@ -132,3 +132,13 @@ First OSS release
 **This is not a backwards compatible change.**
 
 - minimally process standard lambda (dict) responses (pr #59)
+
+### 9.0.0 (2020-04-14)
+
+**This is not a backwards compatible change.**
+
+- add support for scopes #60
+- drop support for python 3.5
+- drop tox for testing
+- use poetry for packaging
+

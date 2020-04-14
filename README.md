@@ -28,7 +28,7 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 Install the package from [PyPI](http://pypi.python.org/pypi/) using [pip](https://pip.pypa.io/):
 
 ```bash
-pip install lambdarest
+$ pip install lambdarest
 ```
 
 ## Getting Started
@@ -327,20 +327,24 @@ Because of python unittests leaky test-cases it seems like you shall beware of [
 
 ## Tests
 
-This package uses Make to install requirements and run tests.
+This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
 
 Use the following commands to install requirements and run test-suite:
 
-```
-
-$ make setup test
+```bash
+$ poetry install
+$ poetry run task test
 ```
 
 For more info see [Contributing...](./CONTRIBUTING.md)
 
+## Changelog
+
+See [HISTORY.md](https://github.com/trustpilot/python-lambdarest/blob/master/HISTORY.md)
+
 ## Contributors
 
-@nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @adamelmore, @sloev
+@aphexer @nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @adamelmore, @sloev
 
 [Wanna contribute?](./CONTRIBUTING.md)
 

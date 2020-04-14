@@ -22,32 +22,27 @@ There is two ways of running the lint+tests both of them require the install of 
 
 ### 1. Run for current python version
 
-```
-$ make setup test
+This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
+
+Use the following commands to install requirements and run test-suite:
+
+```bash
+$ poetry install
+$ poetry run task test
 ```
 
-which 
+Which 
 
-* Installs test and lint dependencies
-* runs **black** and **pytest**
+* Installs all dev dependencies
+* runs **pytest**
 
 for the current python version.
-
-### 2. Run for all supported versions
-
-This uses **tox** and pyenv to run tests for all versions.
-
-Start by [installing pyenv](https://github.com/pyenv/pyenv#installation) and then run the following commands to install supported python versions and run **pytest** and **black** using **tox**
-
-```
-$ make setup-all tox
-```
 
 
 ### Linting
 
 Be sure to see if linting is correct before commiting. The following make target fixes linting issues and makes you aware of errors
 
-```
-$ make fix-lint
+```bash
+$ poetry run black .
 ```
