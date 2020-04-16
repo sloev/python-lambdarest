@@ -344,7 +344,7 @@ See [HISTORY.md](https://github.com/trustpilot/python-lambdarest/blob/master/HIS
 
 ## Contributors
 
-@aphexer @nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @adamelmore, @sloev
+@mkreg @aphexer @nabrosimoff, @elviejokike, @eduardomourar, @devgrok, @AlbertoTrindade, @paddie, @svdgraaf, @simongarnier, @martinbuberl, @adamelmore, @sloev
 
 [Wanna contribute?](./CONTRIBUTING.md)
 

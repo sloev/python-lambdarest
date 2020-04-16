@@ -142,3 +142,8 @@ First OSS release
 - drop tox for testing
 - use poetry for packaging
 
+### 9.1.0 (2020-04-16)
+
+- Fixed issue with empty dict being returned as is instead of being converted to string #63
+- Fixed issue with schema validation for schemas with oneOf element #62
+
