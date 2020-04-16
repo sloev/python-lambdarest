@@ -37,7 +37,7 @@ class Response(object):
         """
         status_code = self.status_code or 200
         # if it's already a str, we don't need json.dumps
-        do_json_dumps = self.body and not isinstance(self.body, str)
+        do_json_dumps = self.body is not None and not isinstance(self.body, str)
         response = {
             "body": json.dumps(self.body, cls=encoder, sort_keys=True)
             if do_json_dumps
