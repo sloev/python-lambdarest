@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import sys
 from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
@@ -258,7 +257,7 @@ def create_lambda_handler(
 
             except ValidationError as error:
                 error_description = "Schema[{}] with value {}".format(
-                    "][".join(error.absolute_schema_path), error.message
+                    "][".join(str(error.absolute_schema_path)), error.message
                 )
                 logging.warning(
                     logging_message.format(status_code=400, message=error_description)
