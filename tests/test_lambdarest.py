@@ -3,12 +3,12 @@ try:
 except ImportError:
     import mock
 
-import unittest
-import json
 import copy
+import json
 import random
-from datetime import datetime
 import time
+import unittest
+from datetime import datetime
 
 from lambdarest import create_lambda_handler
 
@@ -137,6 +137,46 @@ class TestLambdarestFunctions(unittest.TestCase):
                     "type": "object",
                     "properties": {"my_integer": {"type": "integer"}},
                 }
+            },
+        }
+
+        self.event["body"] = json.dumps(json_body)
+        # create deep copy for testing purposes, self.event is mutable
+        assert_event = copy.deepcopy(self.event)
+        assert_event["context"] = self.context
+        assert_event["json"] = dict(body=json_body, query={})
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post", schema=post_schema)(
+            post_mock
+        )  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result, {"body": "Validation Error", "statusCode": 400, "headers": {}}
+        )
+
+    def test_schema_with_oneof_invalid(self):
+        json_body = dict(typeA="foobar")
+        post_schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "oneOf": [
+                        {"$ref": "#/definitions/typeA"},
+                        {"$ref": "#/definitions/typeB"},
+                    ],
+                }
+            },
+            "definitions": {
+                "typeA": {
+                    "properties": {"propertyA": {"type": "string"}},
+                    "required": ["propertyA"],
+                },
+                "typeB": {
+                    "properties": {"propertyB": {"type": "string"}},
+                    "required": ["propertyB"],
+                },
             },
         }
 
