@@ -215,6 +215,12 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(self.event, self.context)
         self.assertEqual(result, {"body": "foo", "headers": {}, "statusCode": 200})
 
+    def test_that_it_works_with_empty_dict_and_status_code_as_response(self):
+        post_mock = mock.Mock(return_value=({}, 200))
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result, {"body": "{}", "headers": {}, "statusCode": 200})
+
     def test_that_specified_path_works(self):
         json_body = {}
 
