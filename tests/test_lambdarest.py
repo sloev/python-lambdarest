@@ -485,6 +485,25 @@ class TestLambdarestFunctions(unittest.TestCase):
             result, {"headers": {"Location": "https://example.com"}, "statusCode": 302}
         )
 
+    def test_that_standard_dict_responses_without_a_body_are_returned_as_is_multiHeader(
+        self,
+    ):
+        post_mock = mock.Mock(
+            return_value={
+                "statusCode": 302,
+                "multiValueHeaders": {"Location": ["https://example.com"]},
+            }
+        )
+        self.lambda_handler.handle("post")(post_mock)  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(
+            result,
+            {
+                "multiValueHeaders": {"Location": ["https://example.com"]},
+                "statusCode": 302,
+            },
+        )
+
     def test_that_dict_responses_that_happen_to_have_a_body_key_retain_previous_behavior(
         self,
     ):
