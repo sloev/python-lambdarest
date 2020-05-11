@@ -2,6 +2,9 @@
 
 Here you find updated documentation on how to use Lambdarest, please check as well the [tests](https://github.com/trustpilot/python-lambdarest/blob/master/docs/tests/) directory for some more examples.
 
+Lambdarest is a product of collaboration, please consider [Contributing](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md) if you have an [issue](https://github.com/trustpilot/python-lambdarest/issues/new/choose) or a [feature](https://github.com/trustpilot/python-lambdarest/pulls) :-)
+
+
 **Contents**
 
 * [Installation](#installation)
@@ -14,6 +17,7 @@ Here you find updated documentation on how to use Lambdarest, please check as we
 * [Authorization Scopes](#authorization-scopes)
 * [Exception Handling](#exception-handling)
 * [AWS Application Load Balancer](#aws-application-load-balancer)
+* [Tests](#tests)
 
 ## Installation
 
@@ -390,3 +394,16 @@ input_event = {
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
 ```
+
+## Tests
+
+This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
+
+Use the following commands to install requirements and run test-suite:
+
+```bash
+$ poetry install
+$ poetry run task test
+```
+
+For more info see [Contributing...](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
