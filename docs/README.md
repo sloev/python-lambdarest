@@ -169,7 +169,7 @@ return {'some':'json'}, 200, {'header':'value'}
 
 2. return tuple with *normal header* **and** *multiValueHeaders*
 
-```json
+```python
 return {'some':'json'}, 200, {'header':'value'}, {'multi_header': ["foo", "bar"]}
 ```
 
@@ -177,7 +177,7 @@ return {'some':'json'}, 200, {'header':'value'}, {'multi_header': ["foo", "bar"]
 
 *(you need to still populate the headers as an empty dict)*
 
-```json
+```python
 return {'some':'json'}, 200, {}, {'multi_header': ["foo", "bar"]}
 ```
 

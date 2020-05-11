@@ -91,7 +91,7 @@ See [HISTORY.md](https://github.com/trustpilot/python-lambdarest/blob/master/doc
 
 Thanks for contributing!
 
-[@amacks][https://github.com/amacks], [@jacksgt](https://github.com/jacksgt), [@mkreg](https://github.com/mkreg), [@aphexer](https://github.com/aphexer), [@nabrosimoff](https://github.com/nabrosimoff), [@elviejokike](https://github.com/elviejokike), [@eduardomourar](https://github.com/eduardomourar), [@devgrok](https://github.com/devgrok), [@AlbertoTrindade](https://github.com/AlbertoTrindade), [@paddie](https://github.com/paddie), [@svdgraaf](https://github.com/svdgraaf), [@simongarnier](https://github.com/simongarnier), [@martinbuberl](https://github.com/martinbuberl), [@adamelmore](https://github.com/adamelmore), [@sloev](https://github.com/sloev)
+[@amacks](https://github.com/amacks), [@jacksgt](https://github.com/jacksgt), [@mkreg](https://github.com/mkreg), [@aphexer](https://github.com/aphexer), [@nabrosimoff](https://github.com/nabrosimoff), [@elviejokike](https://github.com/elviejokike), [@eduardomourar](https://github.com/eduardomourar), [@devgrok](https://github.com/devgrok), [@AlbertoTrindade](https://github.com/AlbertoTrindade), [@paddie](https://github.com/paddie), [@svdgraaf](https://github.com/svdgraaf), [@simongarnier](https://github.com/simongarnier), [@martinbuberl](https://github.com/martinbuberl), [@adamelmore](https://github.com/adamelmore), [@sloev](https://github.com/sloev)
 
 [Wanna contribute?](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
 
