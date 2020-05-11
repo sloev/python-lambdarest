@@ -147,3 +147,9 @@ First OSS release
 - Fixed issue with empty dict being returned as is instead of being converted to string #63
 - Fixed issue with schema validation for schemas with oneOf element #62
 
+### 9.2.0 (2020-05-11)
+
+- Document exception handling behavior in README #66
+- Supporting multiValueHeaders #65
+- Reorganize documentation
+
