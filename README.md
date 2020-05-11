@@ -148,6 +148,49 @@ result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
 ```
 
+### Headers and MultiValueHeaders
+
+You can return headers as part of your response, there is two types of headers:
+
+* **headers**: a dictionary
+* **multiValueHeaders**: a dictionary with multiple values for each key
+
+You can populate the headers in the following ways:
+
+1. return tuple with *normal header*
+
+```python
+return {'some':'json'}, 200, {'header':'value'}
+```
+
+2. return tuple with *normal header* **and** *multiValueHeaders*
+
+```json
+return {'some':'json'}, 200, {'header':'value'}, {'multi_header': ["foo", "bar"]}
+```
+
+3. return tuple with *multiValueHeaders*
+
+*(you need to still populate the headers as an empty dict)*
+
+```json
+return {'some':'json'}, 200, {}, {'multi_header': ["foo", "bar"]}
+```
+
+4. return [`Response`](https://github.com/trustpilot/python-lambdarest/blob/cd50bb4e1da4f720ef94534ccfd4989f398a9d5d/lambdarest/__init__.py#L17) object
+
+```python
+from lambdarest import Response
+# with headers
+Response({'some':'json'}, 200, headers={'header':'value'})
+
+# with multiValueHeaders
+Response({'some':'json'}, 200, multiValueHeaders={'multi_header': ["foo", "bar"]})
+
+# with headers and multiValueHeaders
+Response({'some':'json'}, 200, headers={'header':'value'}, multiValueHeaders={'multi_header': ["foo", "bar"]})
+```
+
 ### Routing
 
 You can also specify which path to react on for individual handlers using the `path` param:
