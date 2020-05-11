@@ -300,6 +300,8 @@ assert result == {"body": "Permission denied", "statusCode": 403, "headers":{}}
 By default, this framework provides a simple error handling function that catches all exceptions thrown by the handlers and converts them into `500 {error message}` responses. You can either specify your own error handler or not provide one at all. In the latter case, the exceptions will be raised outside of `lambdarest.handle` function.
 
 ```python
+import traceback
+from lambdarest import create_lambda_handler
 # Option 1: provide your own exception handler
 def error_handler(error, method):
     print('Error:', str(error), 'in', method)
