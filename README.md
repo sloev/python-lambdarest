@@ -295,6 +295,30 @@ print(result)
 assert result == {"body": "Permission denied", "statusCode": 403, "headers":{}}
 ```
 
+## Exception Handling
+
+By default, this framework provides a simple error handling function that catches all exceptions thrown by the handlers and converts them into `500 {error message}` responses. You can either specify your own error handler or not provide one at all. In the latter case, the exceptions will be raised outside of `lambdarest.handle` function.
+
+```python
+import traceback
+from lambdarest import create_lambda_handler
+
+# Option 1: provide your own exception handler
+def error_handler(error, method):
+    print('Error:', str(error), 'in', method)
+   
+lambda_handler = create_lambda_handler(error_handler=error_handler)
+
+# Option 2: raise all exceptions and handle them outside lambdarest
+lambda_handler = create_lambda_handler(error_handler=None)
+
+try:
+    result = lambda_handler(event=event)
+except:
+    traceback.print_exc()
+    result = {'statusCode': 500, 'body': 'Internal Server Error'}
+```
+
 ## Use it with AWS Application Load Balancer
 
 In order to use it with Application Load Balancer you need to create your own lambda_handler and not use the singleton:
