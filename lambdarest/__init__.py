@@ -22,10 +22,13 @@ class Response(object):
     if no headers are specified, empty dict is returned
     """
 
-    def __init__(self, body=None, status_code=None, headers=None):
+    def __init__(
+        self, body=None, status_code=None, headers=None, multiValueHeaders=None
+    ):
         self.body = body
         self.status_code = status_code
         self.headers = headers
+        self.multiValueHeaders = multiValueHeaders
         self.status_code_description = None
         self.isBase64_encoded = False
 
@@ -42,8 +45,12 @@ class Response(object):
             if do_json_dumps
             else self.body,
             "statusCode": status_code,
-            "headers": self.headers or {},
         }
+        ## handle multiValueHeaders if defined, default to headers
+        if self.multiValueHeaders == None:
+            response["headers"] = self.headers or {}
+        else:
+            response["multiValueHeaders"] = self.multiValueHeaders
         # if body is None, remove the key
         if response.get("body") == None:
             response.pop("body")
@@ -227,7 +234,7 @@ def create_lambda_handler(
                 response = func(event, **kwargs)
                 if not isinstance(response, Response):
                     # Set defaults
-                    status_code = headers = None
+                    status_code = headers = multiValueHeaders = None
 
                     if isinstance(response, tuple):
                         response_len = len(response)
@@ -235,21 +242,24 @@ def create_lambda_handler(
                             raise ValueError("Response tuple has more than 3 items")
 
                         # Unpack the tuple, missing items will be defaulted
-                        body, status_code, headers = response + (None,) * (
-                            3 - response_len
-                        )
+                        body, status_code, headers, multiValueHeaders = response + (
+                            None,
+                        ) * (4 - response_len)
 
                     elif isinstance(response, dict) and all(
-                        key in ["body", "statusCode", "headers"]
+                        key in ["body", "statusCode", "headers", "multiValueHeaders"]
                         for key in response.keys()
                     ):
                         body = response.get("body")
                         status_code = response.get("statusCode") or status_code
                         headers = response.get("headers") or headers
+                        multiValueHeaders = (
+                            response.get("multiValueHeaders") or multiValueHeaders
+                        )
 
                     else:  # if response is string, int, etc.
                         body = response
-                    response = Response(body, status_code, headers)
+                    response = Response(body, status_code, headers, multiValueHeaders)
                 return response.to_json(
                     encoder=json_encoder,
                     application_load_balancer=application_load_balancer,
