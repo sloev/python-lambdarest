@@ -125,10 +125,10 @@ def __marshall_value(value, query_param_schema_fragment):
 
     try:
         return json.loads(value)
-    except Exception:
-        value_cand = value.split(",")
-        if len(value_cand) > 1:
-            return __cast_list(value, float)
+    except TypeError:
+        pass
+    except ValueError:
+        pass
     return value
 
 

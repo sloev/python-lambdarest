@@ -880,14 +880,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         assert_event["json"] = {
             "body": {},
             "query": {
-                "AccountId": [
-                    "123124124",
-                    "0000000123123",
-                    "0001fd",
-                    "fd001",
-                    "     fd012312",
-                    "      000123",
-                ]
+                "AccountId": "123124124,0000000123123,0001fd,fd001,     fd012312,      000123"
             },
         }
 
