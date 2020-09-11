@@ -5,7 +5,7 @@ from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
-
+from distutils.util import strtobool
 
 from functools import wraps
 
@@ -74,28 +74,74 @@ class ScopeMissing(Exception):
     pass
 
 
-def __float_cast(value):
+def __cast_list(value, type):
+    values_list = value.split(",")
+
+    def inner_cast(inner_type):
+        try:
+            return list(map(inner_type, values_list))
+        except TypeError:
+            pass
+        except ValueError:
+            pass
+        return None
+
+    return inner_cast(type) or inner_cast(str) or value
+
+
+def __cast_bool(bool_string):
     try:
-        return float(value)
-    except Exception:
+        bool(strtobool(bool_string))
+    except TypeError:
         pass
-    return value
+    return bool_string
 
 
-def __marshall_query_params(value):
+def __marshall_value(value, query_param_schema_fragment):
+    value_type = query_param_schema_fragment.get("type", None)
+
     try:
-        value = json.loads(value)
+        if value_type == "array":
+            array_type = query_param_schema_fragment.get("items", {}).get("type", None)
+
+            if array_type == "string":
+                return __cast_list(value, str)
+            elif array_type == "integer":
+                return __cast_list(value, int)
+            elif array_type == "number":
+                return __cast_list(value, float)
+            elif array_type == "boolean":
+                return __cast_list(value, __cast_bool)
+        elif value_type == "string":
+            return value
+        elif value_type == "integer":
+            return int(value)
+        elif value_type == "number":
+            return float(value)
+        elif value_type == "boolean":
+            return __cast_bool(value)
+    except TypeError:
+        pass
+
+    try:
+        return json.loads(value)
     except Exception:
         value_cand = value.split(",")
         if len(value_cand) > 1:
-            value = list(map(__float_cast, value_cand))
+            return __cast_list(value, float)
     return value
 
 
-def __json_load_query(query):
+def __json_load_query(query, query_param_schema=None):
     query = query or {}
+    query_param_schema = query_param_schema or {}
 
-    return {key: __marshall_query_params(value) for key, value in query.items()}
+    return {
+        key: __marshall_value(value, query_param_schema.get(key, {}))
+        for key, value in query.items()
+    }
+    print(r)
+    return r
 
 
 def default_error_handler(error, method):
@@ -296,13 +342,22 @@ def create_lambda_handler(
         if schema and not load_json:
             raise ValueError("if schema is supplied, load_json needs to be true")
 
+        query_param_schema = None
+        if isinstance(schema, dict):
+            query_param_schema = (
+                schema.get("properties", {}).get("query", {}).get("properties", {})
+            )
+
         def wrapper(func):
             @wraps(func)
             def inner(event, *args, **kwargs):
                 if load_json:
                     json_data = {
                         "body": json.loads(event.get("body") or "{}"),
-                        "query": __json_load_query(event.get("queryStringParameters")),
+                        "query": __json_load_query(
+                            event.get("queryStringParameters"),
+                            query_param_schema=query_param_schema,
+                        ),
                     }
                     event["json"] = json_data
                     if schema:
