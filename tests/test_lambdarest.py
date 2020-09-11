@@ -811,3 +811,132 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.assertEqual(
             result, {"body": "Permission denied", "statusCode": 403, "headers": {}}
         )
+
+    def test_multiple_digit_account_ids_in_query_param_full_schema(self):
+        post_schema = post_schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "query": {  # here we adress the unpacked query params
+                    "type": "object",
+                    "properties": {
+                        "AccountId": {"type": "array", "items": {"type": "string"}}
+                    },
+                }
+            },
+        }
+        self.event["queryStringParameters"] = {
+            "AccountId": "123124124,0000000123123,0001fd,fd001,     fd012312,      000123"
+        }
+        self.event["body"] = ""
+
+        # create deep copy for testing purposes, self.event is mutable
+        assert_event = copy.deepcopy(self.event)
+        assert_event["context"] = self.context
+        assert_event["json"] = {
+            "body": {},
+            "query": {
+                "AccountId": [
+                    "123124124",
+                    "0000000123123",
+                    "0001fd",
+                    "fd001",
+                    "     fd012312",
+                    "      000123",
+                ]
+            },
+        }
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post", schema=post_schema)(
+            post_mock
+        )  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
+        call_args = post_mock.call_args_list[0][0][0]
+        print("called with", json.dumps(call_args["json"], indent=2))
+        print(
+            "should have been called with", json.dumps(assert_event["json"], indent=2)
+        )
+
+        post_mock.assert_called_with(assert_event)
+
+    def test_multiple_digit_account_ids_in_query_param_missing_schema_default_to_string(
+        self,
+    ):
+        post_schema = post_schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {},
+        }
+        self.event["queryStringParameters"] = {
+            "AccountId": "123124124,0000000123123,0001fd,fd001,     fd012312,      000123"
+        }
+        self.event["body"] = ""
+
+        # create deep copy for testing purposes, self.event is mutable
+        assert_event = copy.deepcopy(self.event)
+        assert_event["context"] = self.context
+        assert_event["json"] = {
+            "body": {},
+            "query": {
+                "AccountId": [
+                    "123124124",
+                    "0000000123123",
+                    "0001fd",
+                    "fd001",
+                    "     fd012312",
+                    "      000123",
+                ]
+            },
+        }
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post", schema=post_schema)(
+            post_mock
+        )  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
+        call_args = post_mock.call_args_list[0][0][0]
+        print("called with", json.dumps(call_args["json"], indent=2))
+        print(
+            "should have been called with", json.dumps(assert_event["json"], indent=2)
+        )
+
+        post_mock.assert_called_with(assert_event)
+
+    def test_query_param_schema_integer(self):
+        post_schema = post_schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "query": {  # here we adress the unpacked query params
+                    "type": "object",
+                    "properties": {"myInteger": {"type": "integer"}},
+                }
+            },
+        }
+        self.event["queryStringParameters"] = {"myInteger": "0012"}
+        self.event["body"] = ""
+
+        # create deep copy for testing purposes, self.event is mutable
+        assert_event = copy.deepcopy(self.event)
+        assert_event["context"] = self.context
+        assert_event["json"] = {
+            "body": {},
+            "query": {"myInteger": 12},
+        }
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post", schema=post_schema)(
+            post_mock
+        )  # decorate mock
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
+        call_args = post_mock.call_args_list[0][0][0]
+        print("called with", json.dumps(call_args["json"], indent=2))
+        print(
+            "should have been called with", json.dumps(assert_event["json"], indent=2)
+        )
+
+        post_mock.assert_called_with(assert_event)
