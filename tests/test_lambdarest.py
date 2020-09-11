@@ -211,7 +211,16 @@ class TestLambdarestFunctions(unittest.TestCase):
             },
         )
 
-    def test_that_it_unpacks_and_validates_query_params(self):
+    def test_that_it_unpacks_and_validates_query_params_and_raises_validation_error(
+        self,
+    ):
+        """
+        Deprecated behavior in v.10.0.1
+        We are no longer supporting json objects as query params, please use json_body for that instead.
+        in the following case we are not unpacking the query-arg-json-objects so they can be 
+        validated against the schema which means you will compare a string to a dictionary and
+        get a validation error.
+        """
         json_body = dict(my_integer="this is not an integer")
         queryStringParameters = dict(
             foo='"keys"', bar='{"baz":20}', baz="1,2,3", apples="1"
@@ -247,7 +256,9 @@ class TestLambdarestFunctions(unittest.TestCase):
             post_mock
         )  # decorate mock
         result = self.lambda_handler(self.event, self.context)
-        self.assertEqual(result, {"body": "foobar", "statusCode": 200, "headers": {}})
+        self.assertEqual(
+            result, {"body": "Validation Error", "headers": {}, "statusCode": 400}
+        )
 
     def test_that_it_works_without_body_or_queryStringParameters(self):
         post_mock = mock.Mock(return_value="foo")

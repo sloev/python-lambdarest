@@ -159,3 +159,4 @@ First OSS release
 **This is not a backwards compatible change.**
 
 - Use query `schema.properties.query.properties.*` as type lookup for unpacking of query params to right types (including lists/singulars of strings/ints/floats/booleans)
+- **not supporting json objects as values in query-params anymore** _use json body instead_ 

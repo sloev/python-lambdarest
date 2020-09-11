@@ -123,12 +123,6 @@ def __marshall_value(value, query_param_schema_fragment):
     except TypeError:
         pass
 
-    try:
-        return json.loads(value)
-    except TypeError:
-        pass
-    except ValueError:
-        pass
     return value
 
 
