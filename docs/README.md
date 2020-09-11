@@ -114,7 +114,11 @@ assert result == {"body": 'Validation Error', "statusCode": 400, "headers":{}}
 ## Query Params
 
 Query parameters are also analyzed and validatable with JSON schemas.
-Query arrays are expected to be comma separated, all numbers are converted to floats.
+
+Query arrays are expected to be comma separated.
+
+All values are unpacked to types defined in `schema.properties.query.properties.*`.
+
 
 ```python
 from lambdarest import lambda_handler
@@ -155,6 +159,14 @@ valid_input_event = {
 result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
 ```
+
+### arrays without specification in json schema
+
+If you supply an array, (comma seperated value),  to a query arg and you *dont* include a specification for the field in your jsonschema *then*: 
+
+1. the value will be unpacked as a string array
+2. all values will be tried cast to floats
+3. if error it will default back to string array again.
 
 ## Headers and MultiValueHeaders
 
