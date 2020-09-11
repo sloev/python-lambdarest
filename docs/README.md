@@ -114,46 +114,168 @@ assert result == {"body": 'Validation Error', "statusCode": 400, "headers":{}}
 ## Query Params
 
 Query parameters are also analyzed and validatable with JSON schemas.
-Query arrays are expected to be comma separated, all numbers are converted to floats.
 
-```python
-from lambdarest import lambda_handler
+Query arrays are expected to be comma separated.
 
-my_schema = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "query":{
-            "type": "object",
-            "properties": {
-                "foo": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
+All values are unpacked to types defined in `schema.properties.query.properties.*`, see the **examples underneath**
+
+The resulting query args are tested against the full jsonschema together with the body, headers etc.
+
+### Float array example
+
+In jsonschema **number** covers both ints and floats, in lambdarest all **number**s are cast as floats.
+
+<details>
+  <summary>Expand example</summary>
+ 
+    ```python
+    from lambdarest import lambda_handler
+
+    my_schema = {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "query":{
+                "type": "object",
+                "properties": {
+                    "foo": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
                     }
                 }
             }
         }
     }
-}
 
-@lambda_handler.handle("get", path="/with-params/", schema=my_schema)
-def my_own_get(event):
-    return event["json"]["query"]
-
-
-##### TEST #####
+    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
+    def my_own_get(event):
+        return event["json"]["query"]
 
 
-valid_input_event = {
-    "queryStringParameters": {
-        "foo": "1, 2.2, 3"
-    },
-    "httpMethod": "GET",
-    "resource": "/with-params/"
-}
-result = lambda_handler(event=valid_input_event)
-assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
+    ##### TEST #####
+
+
+    valid_input_event = {
+        "queryStringParameters": {
+            "foo": "1, 2.2, 3"
+        },
+        "httpMethod": "GET",
+        "resource": "/with-params/"
+    }
+    result = lambda_handler(event=valid_input_event)
+    assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
+    ```
+</details>
+
+
+### Integer array example
+
+Specify array type as integer to get int casting
+
+<details>
+  <summary>Expand example</summary>
+ 
+    ```python
+    from lambdarest import lambda_handler
+
+    my_schema = {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "query":{
+                "type": "object",
+                "properties": {
+                    "foo": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
+    def my_own_get(event):
+        return event["json"]["query"]
+
+
+    ##### TEST #####
+
+
+    valid_input_event = {
+        "queryStringParameters": {
+            "foo": "1, 2.2, 3"
+        },
+        "httpMethod": "GET",
+        "resource": "/with-params/"
+    }
+    result = lambda_handler(event=valid_input_event)
+    assert result == {"body": '{"foo": [1, 2, 3]}', "statusCode": 200, "headers":{}}
+    ```
+</details>
+
+### String array example
+
+Specify array type as string to get an array of strings **beware of spaces after commas, they are respected!**
+
+<details>
+  <summary>Expand example</summary>
+ 
+    ```python
+    from lambdarest import lambda_handler
+
+    my_schema = {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "query":{
+                "type": "object",
+                "properties": {
+                    "foo": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
+    def my_own_get(event):
+        return event["json"]["query"]
+
+
+    ##### TEST #####
+
+
+    valid_input_event = {
+        "queryStringParameters": {
+            "foo": "1, 2.2, 3"
+        },
+        "httpMethod": "GET",
+        "resource": "/with-params/"
+    }
+    result = lambda_handler(event=valid_input_event)
+    assert result == {"body": '{"foo": ["1", " 2.2"," 3"]}', "statusCode": 200, "headers":{}}
+    ```
+</details>
+
+
+### Behavior with missing query args specs in jsonschema
+
+If no json schema is supplied for the input schema Lambdarest will try to behave consistently and cast according to this pseudocode:
+
+```
+try: 
+    return json.loads(raw_value)  # this will cover majority of types
+except:
+    return raw_value
 ```
 
 ## Headers and MultiValueHeaders

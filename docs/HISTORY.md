@@ -153,3 +153,10 @@ First OSS release
 - Supporting multiValueHeaders #65
 - Reorganize documentation
 
+
+### 10.0.1 (2020-09-11)
+
+**This is not a backwards compatible change.**
+
+- Use query `schema.properties.query.properties.*` as type lookup for unpacking of query params to right types (including lists/singulars of strings/ints/floats/booleans)
+- **not supporting json objects as values in query-params anymore** _use json body instead_ 
