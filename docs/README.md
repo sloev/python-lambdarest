@@ -160,7 +160,7 @@ result = lambda_handler(event=valid_input_event)
 assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
 ```
 
-### arrays without specification in json schema
+### Arrays without specification in json schema
 
 If you supply an array, (comma seperated value),  to a query arg and you *dont* include a specification for the field in your jsonschema *then*: 
 
