@@ -140,8 +140,6 @@ def __json_load_query(query, query_param_schema=None):
         key: __marshall_value(value, query_param_schema.get(key, {}))
         for key, value in query.items()
     }
-    print(r)
-    return r
 
 
 def default_error_handler(error, method):
