@@ -8,6 +8,7 @@ import json
 import random
 import time
 import unittest
+import base64
 from datetime import datetime
 
 from lambdarest import create_lambda_handler
@@ -412,6 +413,51 @@ class TestLambdarestFunctions(unittest.TestCase):
                 "headers": {},
                 "statusDescription": "HTTP OK",
                 "isBase64Encoded": False,
+            },
+        )
+
+    def test_that_alb_base64_encoding_works(self):
+        json_body = {}
+
+        self.event["body"] = json.dumps(json_body)
+        self.event["httpMethod"] = "GET"
+        self.event["queryStringParameters"] = {}
+        self.event["headers"] = {}
+        del self.event["resource"]
+        del self.event["stageVariables"]
+
+        def mock_handler(event, id):
+            return {
+                'statusCode': 200,
+                'body': base64.b64encode("test of base64 encoding for ALB".encode("utf8")).decode("utf-8"),
+                'isBase64Encoded': True,
+                'headers': {
+                    'Content-Type': "text/plain"
+                }
+            }
+
+        get_mock1 = mock.Mock(wraps=mock_handler)
+
+        self.lambda_handler_application_load_balancer.handle(
+            "get", path="/foo/<id>/bar"
+        )(
+            get_mock1
+        )  # decorate mock
+
+        self.event["path"] = "/foo/foobar/bar"
+        result1 = self.lambda_handler_application_load_balancer(
+            self.event, self.context
+        )
+        self.assertEqual(
+            result1,
+            {
+                "body": "dGVzdCBvZiBiYXNlNjQgZW5jb2RpbmcgZm9yIEFMQg==",
+                "statusCode": 200,
+                'headers': {
+                    'Content-Type': "text/plain"
+                },
+                "statusDescription": "HTTP OK",
+                "isBase64Encoded": True
             },
         )
 

@@ -23,14 +23,14 @@ class Response(object):
     """
 
     def __init__(
-        self, body=None, status_code=None, headers=None, multiValueHeaders=None
+        self, body=None, status_code=None, headers=None, multiValueHeaders=None, isBase64_encoded=False
     ):
         self.body = body
         self.status_code = status_code
         self.headers = headers
         self.multiValueHeaders = multiValueHeaders
         self.status_code_description = None
-        self.isBase64_encoded = False
+        self.isBase64_encoded = isBase64_encoded
 
     def to_json(self, encoder=json.JSONEncoder, application_load_balancer=False):
         """Generates and returns an object with the expected field names.
@@ -273,6 +273,7 @@ def create_lambda_handler(
                 if not isinstance(response, Response):
                     # Set defaults
                     status_code = headers = multiValueHeaders = None
+                    isBase64Encoded = False
 
                     if isinstance(response, tuple):
                         response_len = len(response)
@@ -285,7 +286,7 @@ def create_lambda_handler(
                         ) * (4 - response_len)
 
                     elif isinstance(response, dict) and all(
-                        key in ["body", "statusCode", "headers", "multiValueHeaders"]
+                        key in ["body", "statusCode", "headers", "multiValueHeaders", "statusDescription", "isBase64Encoded"]
                         for key in response.keys()
                     ):
                         body = response.get("body")
@@ -294,10 +295,12 @@ def create_lambda_handler(
                         multiValueHeaders = (
                             response.get("multiValueHeaders") or multiValueHeaders
                         )
+                        print("here")
+                        isBase64Encoded = response.get("isBase64Encoded") or isBase64Encoded
 
                     else:  # if response is string, int, etc.
                         body = response
-                    response = Response(body, status_code, headers, multiValueHeaders)
+                    response = Response(body, status_code, headers, multiValueHeaders, isBase64Encoded)
                 return response.to_json(
                     encoder=json_encoder,
                     application_load_balancer=application_load_balancer,
