@@ -295,7 +295,6 @@ def create_lambda_handler(
                         multiValueHeaders = (
                             response.get("multiValueHeaders") or multiValueHeaders
                         )
-                        print("here")
                         isBase64Encoded = response.get("isBase64Encoded") or isBase64Encoded
 
                     else:  # if response is string, int, etc.
