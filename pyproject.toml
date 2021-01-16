@@ -33,7 +33,7 @@ black = "^19.10b0"
 
 [tool.taskipy.tasks]
 test = "rm -f test_readme.py && pytest --doctest-modules -vvv"
-lint = "black tests/ lambdarest/
+lint = "black tests/ lambdarest/"
 
 [build-system]
 requires = ["poetry>=0.12"]
