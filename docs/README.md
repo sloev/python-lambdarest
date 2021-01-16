@@ -17,6 +17,7 @@ Lambdarest is a product of collaboration, please consider [Contributing](https:/
 * [Authorization Scopes](#authorization-scopes)
 * [Exception Handling](#exception-handling)
 * [AWS Application Load Balancer](#aws-application-load-balancer)
+* [Base 64 encoded body](#base-64-encoded-body)
 * [Tests](#tests)
 
 ## Installation
@@ -86,7 +87,7 @@ my_schema = {
 }
 
 @lambda_handler.handle("get", path="/with-schema/", schema=my_schema)
-def my_own_get(event):
+def validate_example(event):
     return {"this": "will be json dumped"}
 
 
@@ -149,8 +150,8 @@ In jsonschema **number** covers both ints and floats, in lambdarest all **number
         }
     }
 
-    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
-    def my_own_get(event):
+    @lambda_handler.handle("get", path="/with-params/floats", schema=my_schema)
+    def float_example(event):
         return event["json"]["query"]
 
 
@@ -162,7 +163,7 @@ In jsonschema **number** covers both ints and floats, in lambdarest all **number
             "foo": "1, 2.2, 3"
         },
         "httpMethod": "GET",
-        "resource": "/with-params/"
+        "resource": "/with-params/floats"
     }
     result = lambda_handler(event=valid_input_event)
     assert result == {"body": '{"foo": [1.0, 2.2, 3.0]}', "statusCode": 200, "headers":{}}
@@ -198,8 +199,8 @@ Specify array type as integer to get int casting
         }
     }
 
-    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
-    def my_own_get(event):
+    @lambda_handler.handle("get", path="/with-params/integers", schema=my_schema)
+    def integer_example(event):
         return event["json"]["query"]
 
 
@@ -211,7 +212,7 @@ Specify array type as integer to get int casting
             "foo": "1, 2.2, 3"
         },
         "httpMethod": "GET",
-        "resource": "/with-params/"
+        "resource": "/with-params/integers"
     }
     result = lambda_handler(event=valid_input_event)
     assert result == {"body": '{"foo": [1, 2, 3]}', "statusCode": 200, "headers":{}}
@@ -246,8 +247,8 @@ Specify array type as string to get an array of strings **beware of spaces after
         }
     }
 
-    @lambda_handler.handle("get", path="/with-params/", schema=my_schema)
-    def my_own_get(event):
+    @lambda_handler.handle("get", path="/with-params/strings", schema=my_schema)
+    def string_example(event):
         return event["json"]["query"]
 
 
@@ -259,10 +260,10 @@ Specify array type as string to get an array of strings **beware of spaces after
             "foo": "1, 2.2, 3"
         },
         "httpMethod": "GET",
-        "resource": "/with-params/"
+        "resource": "/with-params/strings"
     }
     result = lambda_handler(event=valid_input_event)
-    assert result == {"body": '{"foo": ["1", " 2.2"," 3"]}', "statusCode": 200, "headers":{}}
+    assert result == {"body": '{"foo": ["1", " 2.2", " 3"]}', "statusCode": 200, "headers":{}}
     ```
 </details>
 
@@ -329,7 +330,7 @@ You can also specify which path to react on for individual handlers using the `p
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/foo/bar/baz")
-def my_own_get(event):
+def routing_example(event):
     return {"this": "will be json dumped"}
 
 
@@ -351,7 +352,7 @@ And you can specify path parameters as well, which will be passed as keyword arg
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/foo/<int:id>/")
-def my_own_get(event, id):
+def path_param_example(event, id):
     return {"my-id": id}
 
 
@@ -372,7 +373,7 @@ Or you can specify more complex parametrized resource path and get parameteres a
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/object/<int:object_id>/props/<string:foo>/get")
-def my_own_get(event, object_id, foo):
+def double_path_param_example(event, object_id, foo):
     return [{"object_id": int(object_id)}, {"foo": foo}]
 
 
@@ -397,7 +398,7 @@ Or use the Proxy APIGateway magic endpoint:
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/bar/<path:path>")
-def my_own_get(event, path):
+def api_proxy_example(event, path):
     return {"path": path}
 
 
@@ -430,7 +431,7 @@ To use this, add a scopes attribute to the handler with the list of scopes your 
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/private1", scopes=["myresource.read"])
-def my_own_get(event):
+def private_example(event):
     return {"this": "will be json dumped"}
 
 ##### TEST #####
@@ -453,7 +454,7 @@ When no scopes are provided by the authorizer but are still requested by your fu
 from lambdarest import lambda_handler
 
 @lambda_handler.handle("get", path="/private2", scopes=["myresource.read"])
-def my_own_get(event):
+def private_example_2(event):
     return {"this": "will be json dumped"}
 
 ##### TEST #####
@@ -500,8 +501,8 @@ from lambdarest import create_lambda_handler
 
 lambda_handler = create_lambda_handler(application_load_balancer=True)
 
-@lambda_handler.handle("get", path="/foo/<int:id>/")
-def my_own_get(event, id):
+@lambda_handler.handle("get", path="/foo/integer/<int:id>/")
+def application_load_balancer_example(event, id):
     return {"my-id": id}
 
 
@@ -511,10 +512,52 @@ def my_own_get(event, id):
 input_event = {
     "body": '{}',
     "httpMethod": "GET",
-    "resource": "/foo/1234/"
+    "resource": "/foo/integer/1234/"
 }
 result = lambda_handler(event=input_event)
 assert result == {"body": '{"my-id": 1234}', "statusCode": 200, "headers":{}, "statusDescription": "HTTP OK", "isBase64Encoded": False}
+```
+
+## Base 64 encoded body
+
+You can choose to return base64 encoded body by specifying the `isBase64Encoded` param in the return dict.
+
+```python
+import base64
+from lambdarest import create_lambda_handler
+
+lambda_handler = create_lambda_handler(application_load_balancer=True)
+
+@lambda_handler.handle("get", path="/base64")
+def base64_example(event):
+    return {
+        'statusCode': 200,
+        'body': base64.b64encode("test of base64 encoding for ALB".encode("utf8")).decode("utf-8"),
+        'isBase64Encoded': True,
+        'headers': {
+            'Content-Type': "text/plain"
+        }
+    }
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/base64"
+}
+result = lambda_handler(event=input_event)
+assert result == {
+    "body": "dGVzdCBvZiBiYXNlNjQgZW5jb2RpbmcgZm9yIEFMQg==",
+    "statusCode": 200,
+    'headers': {
+        'Content-Type': "text/plain"
+    },
+    "statusDescription": "HTTP OK",
+    "isBase64Encoded": True
+}
 ```
 
 ## Tests
