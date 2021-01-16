@@ -23,14 +23,19 @@ class Response(object):
     """
 
     def __init__(
-        self, body=None, status_code=None, headers=None, multiValueHeaders=None, isBase64_encoded=False
+        self,
+        body=None,
+        status_code=None,
+        headers=None,
+        multiValueHeaders=None,
+        isBase64Encoded=False,
     ):
         self.body = body
         self.status_code = status_code
         self.headers = headers
         self.multiValueHeaders = multiValueHeaders
         self.status_code_description = None
-        self.isBase64_encoded = isBase64_encoded
+        self.isBase64Encoded = isBase64Encoded
 
     def to_json(self, encoder=json.JSONEncoder, application_load_balancer=False):
         """Generates and returns an object with the expected field names.
@@ -46,7 +51,7 @@ class Response(object):
             else self.body,
             "statusCode": status_code,
         }
-        ## handle multiValueHeaders if defined, default to headers
+        # handle multiValueHeaders if defined, default to headers
         if self.multiValueHeaders == None:
             response["headers"] = self.headers or {}
         else:
@@ -64,7 +69,7 @@ class Response(object):
                     #   https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#respond-to-load-balancer
                     "statusDescription": self.status_code_description
                     or "HTTP " + HTTP_STATUS_CODES[status_code],
-                    "isBase64Encoded": self.isBase64_encoded,
+                    "isBase64Encoded": self.isBase64Encoded,
                 }
             )
         return response
@@ -286,7 +291,15 @@ def create_lambda_handler(
                         ) * (4 - response_len)
 
                     elif isinstance(response, dict) and all(
-                        key in ["body", "statusCode", "headers", "multiValueHeaders", "statusDescription", "isBase64Encoded"]
+                        key
+                        in [
+                            "body",
+                            "statusCode",
+                            "headers",
+                            "multiValueHeaders",
+                            "statusDescription",
+                            "isBase64Encoded",
+                        ]
                         for key in response.keys()
                     ):
                         body = response.get("body")
@@ -295,11 +308,15 @@ def create_lambda_handler(
                         multiValueHeaders = (
                             response.get("multiValueHeaders") or multiValueHeaders
                         )
-                        isBase64Encoded = response.get("isBase64Encoded") or isBase64Encoded
+                        isBase64Encoded = (
+                            response.get("isBase64Encoded") or isBase64Encoded
+                        )
 
                     else:  # if response is string, int, etc.
                         body = response
-                    response = Response(body, status_code, headers, multiValueHeaders, isBase64Encoded)
+                    response = Response(
+                        body, status_code, headers, multiValueHeaders, isBase64Encoded
+                    )
                 return response.to_json(
                     encoder=json_encoder,
                     application_load_balancer=application_load_balancer,
