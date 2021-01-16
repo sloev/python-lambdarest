@@ -23,6 +23,7 @@ install:
   - poetry install --verbose
 
 script:
+  - poetry run black --check tests/ lambdarest/
   - poetry run task test
 
 notifications:

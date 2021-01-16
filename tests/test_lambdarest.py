@@ -218,7 +218,7 @@ class TestLambdarestFunctions(unittest.TestCase):
         """
         Deprecated behavior in v.10.0.1
         We are no longer supporting json objects as query params, please use json_body for that instead.
-        in the following case we are not unpacking the query-arg-json-objects so they can be 
+        in the following case we are not unpacking the query-arg-json-objects so they can be
         validated against the schema which means you will compare a string to a dictionary and
         get a validation error.
         """
@@ -428,12 +428,12 @@ class TestLambdarestFunctions(unittest.TestCase):
 
         def mock_handler(event, id):
             return {
-                'statusCode': 200,
-                'body': base64.b64encode("test of base64 encoding for ALB".encode("utf8")).decode("utf-8"),
-                'isBase64Encoded': True,
-                'headers': {
-                    'Content-Type': "text/plain"
-                }
+                "statusCode": 200,
+                "body": base64.b64encode(
+                    "test of base64 encoding for ALB".encode("utf8")
+                ).decode("utf-8"),
+                "isBase64Encoded": True,
+                "headers": {"Content-Type": "text/plain"},
             }
 
         get_mock1 = mock.Mock(wraps=mock_handler)
@@ -453,11 +453,9 @@ class TestLambdarestFunctions(unittest.TestCase):
             {
                 "body": "dGVzdCBvZiBiYXNlNjQgZW5jb2RpbmcgZm9yIEFMQg==",
                 "statusCode": 200,
-                'headers': {
-                    'Content-Type': "text/plain"
-                },
+                "headers": {"Content-Type": "text/plain"},
                 "statusDescription": "HTTP OK",
-                "isBase64Encoded": True
+                "isBase64Encoded": True,
             },
         )
 
