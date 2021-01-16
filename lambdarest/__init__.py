@@ -107,7 +107,7 @@ def __marshall_value(value, query_param_schema_fragment):
             if array_type == "string":
                 return __cast_list(value, str)
             elif array_type == "integer":
-                return __cast_list(value, int)
+                return __cast_list(value, lambda x: int(float(x)))
             elif array_type == "number":
                 return __cast_list(value, float)
             elif array_type == "boolean":
