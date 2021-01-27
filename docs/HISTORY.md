@@ -160,3 +160,9 @@ First OSS release
 
 - Use query `schema.properties.query.properties.*` as type lookup for unpacking of query params to right types (including lists/singulars of strings/ints/floats/booleans)
 - **not supporting json objects as values in query-params anymore** _use json body instead_ 
+
+### 10.1.0 (2021-01-16)
+
+- add support for base64 encoded body
+- fix errrors since readme tests have not been run for a while
+- fix int casting (now casts to float first and then int)

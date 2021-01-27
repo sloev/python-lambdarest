@@ -10,7 +10,7 @@ jobs:
       python: 3.8
     - stage: lint
       python: 3.7
-      script: poetry run black .
+      script: poetry run black --check tests/ lambdarest/
 
 cache: pip
 
