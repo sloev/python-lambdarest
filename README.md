@@ -6,6 +6,8 @@
 
 Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
+> :warning: [A **user study** is currently happening here](https://github.com/sloev/python-lambdarest/issues/76), and your opinion makes the day! Thanks for participating! :smiley:
+
 ### Features
 
 * `lambda_handler` function constructor with built-in dispatcher
