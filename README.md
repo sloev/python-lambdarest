@@ -1,3 +1,5 @@
+![lambdarest logo](https://github.com/sloev/python-lambdarest/blob/master/.github/lambdarest.png)
+
 # lambdarest
 
 [![Build Status](https://travis-ci.com/sloev/python-lambdarest.svg?branch=master)](https://travis-ci.com/github/sloev/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![PyPI - Downloads](https://img.shields.io/pypi/dm/lambdarest?label=pypi%20downloads)](https://pypistats.org/packages/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme) [![Buy me a coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-green.svg)](https://buymeacoffee.com/sloev)
