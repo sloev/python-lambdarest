@@ -2,7 +2,7 @@
 
 # lambdarest
 
-[![Build Status](https://travis-ci.com/sloev/python-lambdarest.svg?branch=master)](https://travis-ci.com/github/sloev/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![PyPI - Downloads](https://img.shields.io/pypi/dm/lambdarest?label=pypi%20downloads)](https://pypistats.org/packages/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme) [![Buy me a coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-green.svg)](https://buymeacoffee.com/sloev)
+[![Build Status](https://travis-ci.com/sloev/python-lambdarest.svg?branch=master)](https://travis-ci.com/github/sloev/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![PyPI - Downloads](https://img.shields.io/pypi/dm/lambdarest?label=pypi%20downloads)](https://pypistats.org/packages/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme)
 
 Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
@@ -13,6 +13,18 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 * `lambda_handler` function constructor with built-in dispatcher
 * Decorator to register functions to handle HTTP methods
 * Optional JSON-schema input validation using same decorator
+
+### Support the development ❤️
+
+You can support the development by:
+
+1. [Contributing code](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
+2. [Buying the maintainer a coffee](https://buymeacoffee.com/sloev)
+3. [Buying some Lambdarest swag](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
+
+    like this mug for example: 
+
+    [![lambdarest mug](https://github.com/sloev/python-lambdarest/blob/master/.github/lambdarest_mug.png)](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
 
 ### External articles / tutorials
 
