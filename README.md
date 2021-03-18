@@ -1,4 +1,4 @@
-![lambdarest logo](https://github.com/sloev/python-lambdarest/blob/master/.github/lambdarest.png)
+![lambdarest logo](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest.png)
 
 # lambdarest
 
@@ -24,7 +24,7 @@ You can support the development by:
 
     like this mug for example: 
 
-    [![lambdarest mug](https://github.com/sloev/python-lambdarest/blob/master/.github/lambdarest_mug.png)](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
+    [![lambdarest mug](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest_mug.png)](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
 
 ### External articles / tutorials
 
