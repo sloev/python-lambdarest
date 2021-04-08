@@ -1,0 +1,4 @@
+theme: jekyll-theme-minimal
+title: Lambdarest
+description: Python routing mini-framework for AWS Lambda with optional JSON-schema validation.
+logo: https://github.com/sloev/python-lambdarest/raw/master/.github/lambdarest.png
