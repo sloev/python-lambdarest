@@ -363,8 +363,12 @@ def create_lambda_handler(
             @wraps(func)
             def inner(event, *args, **kwargs):
                 if load_json:
+                    try:
+                        json_body = json.loads(event.get("body") or "{}")
+                    except json.decoder.JSONDecodeError:
+                        return Response("Invalid json body", 400)
                     json_data = {
-                        "body": json.loads(event.get("body") or "{}"),
+                        "body": json_body,
                         "query": __json_load_query(
                             event.get("queryStringParameters"),
                             query_param_schema=query_param_schema,
