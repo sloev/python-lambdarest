@@ -988,3 +988,11 @@ class TestLambdarestFunctions(unittest.TestCase):
         )
 
         post_mock.assert_called_with(assert_event)
+
+    def test_invalid_json(self):
+        self.event["body"] = "{invalid:json}"
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        assert result["statusCode"] == 400
+        assert result["body"] == "Invalid json body"
