@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "lambdarest"
-version = "10.1.2"
+version = "11.0.0"
 description = "flask like web framework for AWS Lambda"
-authors = ["Johannes Valbjørn <jgv@trustpilot.com>"]
+authors = ["Johannes Valbjørn <johannes.valbjorn@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/trustpilot/python-lambdarest"

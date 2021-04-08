@@ -166,3 +166,10 @@ First OSS release
 - add support for base64 encoded body
 - fix errrors since readme tests have not been run for a while
 - fix int casting (now casts to float first and then int)
+
+
+### 11.0.0 (2021-04-08)
+
+**This is not a backwards compatible change.**
+
+- on bad json body and load_json==True return 400 instead of 500
