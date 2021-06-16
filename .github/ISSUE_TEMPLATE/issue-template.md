@@ -1,13 +1,4 @@
----
-name: New issue
-about: Lambdarest issue template
-title: "[BUG] fix pr"
-labels: ''
-assignees: sloev
-
----
-
-# issue / feature request 
+# title
 
 Here is a description.
 
@@ -21,4 +12,10 @@ Maybe some steps of reproduction:
 2. Then
 3. That
 
+--- 
+
 Lambdarest is looking forward to hear from you!
+
+ping @sloev to look at it :-)
+
+*consider [donating](https://github.com/sloev/python-lambdarest#support-the-development-%EF%B8%8F) to the continued maintenance of Lambdarest ❤️*
