@@ -5,6 +5,7 @@ from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
+from werkzeug.exceptions import HTTPException
 from distutils.util import strtobool
 
 from functools import wraps
@@ -337,6 +338,12 @@ def create_lambda_handler(
                     logging_message.format(status_code=403, message=error_description)
                 )
                 error_tuple = (error_description, 403)
+
+            except HTTPException as error:
+                logging.warning(
+                    logging_message.format(status_code=error.code, message=error.name)
+                )
+                error_tuple = (error.description, error.code)
 
             except Exception as error:
                 if error_handler:
