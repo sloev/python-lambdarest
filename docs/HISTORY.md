@@ -173,3 +173,7 @@ First OSS release
 **This is not a backwards compatible change.**
 
 - on bad json body and load_json==True return 400 instead of 500
+
+### 11.1.0 (2021-08-03)
+
+- catch werkzeug exceptions
