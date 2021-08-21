@@ -8,7 +8,7 @@ from werkzeug.http import HTTP_STATUS_CODES
 from werkzeug.exceptions import HTTPException
 from distutils.util import strtobool
 
-from functools import wraps
+from functools import wraps, reduce
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
@@ -181,6 +181,13 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
         return base_resource
 
 
+def __pipe_funcs(*funcs):
+    def pipe(value):
+        return reduce(lambda r, f: f(r), funcs, value)
+
+    return pipe
+
+
 def create_lambda_handler(
     error_handler=default_error_handler,
     json_encoder=json.JSONEncoder,
@@ -208,8 +215,12 @@ def create_lambda_handler(
 
     """
     url_maps = Map()
+    before_request_handlers = []
+    after_request_handlers = []
 
     def inner_lambda_handler(event, context=None):
+        apply_after_request_handlers = __pipe_funcs(*after_request_handlers)
+
         # check if running as "aws lambda proxy"
         if (
             not isinstance(event, dict)
@@ -275,6 +286,14 @@ def create_lambda_handler(
 
         if func:
             try:
+                for handler in before_request_handlers:
+                    # pylint: disable=E1128
+                    response = handler()
+                    if response:
+                        return response.to_json(
+                            application_load_balancer=application_load_balancer
+                        )
+
                 response = func(event, **kwargs)
                 if not isinstance(response, Response):
                     # Set defaults
@@ -318,6 +337,9 @@ def create_lambda_handler(
                     response = Response(
                         body, status_code, headers, multiValueHeaders, isBase64Encoded
                     )
+
+                response = apply_after_request_handlers(response)
+
                 return response.to_json(
                     encoder=json_encoder,
                     application_load_balancer=application_load_balancer,
@@ -352,7 +374,9 @@ def create_lambda_handler(
                     raise
 
         body, status_code = error_tuple
-        return Response(body, status_code).to_json(
+        response = apply_after_request_handlers(Response(body, status_code))
+
+        return response.to_json(
             application_load_balancer=application_load_balancer
         )
 
@@ -423,8 +447,28 @@ def create_lambda_handler(
 
         return wrapper
 
+    def after_request_handler(func):
+        @wraps(func)
+        def wrapper(request):
+            return func(request)
+
+        after_request_handlers.append(func)
+
+        return wrapper
+
+    def before_request_handler(func):
+        @wraps(func)
+        def wrapper(request):
+            return func(request)
+
+        before_request_handlers.append(func)
+
+        return wrapper
+
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
+    lambda_handler.before_request = before_request_handler
+    lambda_handler.after_request = after_request_handler
     return lambda_handler
 
 

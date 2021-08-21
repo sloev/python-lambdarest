@@ -11,7 +11,7 @@ import unittest
 import base64
 from datetime import datetime
 
-from lambdarest import create_lambda_handler
+from lambdarest import create_lambda_handler, Response
 
 
 def assert_not_called(mock):
@@ -996,3 +996,30 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(self.event, self.context)
         assert result["statusCode"] == 400
         assert result["body"] == "Invalid json body"
+
+    def test_multiple_after_request_handlers(self):
+        @self.lambda_handler.after_request
+        def after1(response):
+            response.headers["Foo"] = "Bar"
+            return response
+
+        @self.lambda_handler.after_request
+        def after2(response):
+            response.headers["Baz"] = "Qux"
+            return response
+
+        post_mock = mock.Mock(return_value=Response(headers=dict()))
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual("Bar", result["headers"]["Foo"])
+        self.assertEqual("Qux", result["headers"]["Baz"])
+
+    def test_before_request_handler(self):
+        @self.lambda_handler.before_request
+        def before():
+            return Response("bar")
+
+        post_mock = mock.Mock(return_value=Response("foo"))
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result["body"], "bar")
