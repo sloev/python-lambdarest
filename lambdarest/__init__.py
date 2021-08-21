@@ -9,6 +9,7 @@ from werkzeug.exceptions import HTTPException
 from distutils.util import strtobool
 
 from functools import wraps, reduce
+from typing import TypeVar, Union, List, Callable
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
@@ -74,6 +75,21 @@ class Response(object):
                 }
             )
         return response
+
+
+T = TypeVar("T")
+Maybe = Union[None, T]
+
+
+# If it returns a Response, the value is handled as if it was the return
+# value from the view, and further request handling is stopped.
+BeforeRequestCallable = Callable[[], Maybe[Response]]
+
+
+# The function is called with the response object, and must return a response
+# object. This allows the functions to modify or replace the response before it
+# is sent.
+AfterRequestCallable = Callable[[Response], Response]
 
 
 class ScopeMissing(Exception):
@@ -181,7 +197,7 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
         return base_resource
 
 
-def __pipe_funcs(*funcs):
+def __pipe_funcs(*funcs: Callable[[T], T]):
     def pipe(value):
         return reduce(lambda r, f: f(r), funcs, value)
 
@@ -215,8 +231,8 @@ def create_lambda_handler(
 
     """
     url_maps = Map()
-    before_request_handlers = []
-    after_request_handlers = []
+    before_request_handlers: List[BeforeRequestCallable] = []
+    after_request_handlers: List[AfterRequestCallable] = []
 
     def inner_lambda_handler(event, context=None):
         apply_after_request_handlers = __pipe_funcs(*after_request_handlers)
