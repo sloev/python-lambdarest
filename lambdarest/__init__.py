@@ -392,9 +392,7 @@ def create_lambda_handler(
         body, status_code = error_tuple
         response = apply_after_request_handlers(Response(body, status_code))
 
-        return response.to_json(
-            application_load_balancer=application_load_balancer
-        )
+        return response.to_json(application_load_balancer=application_load_balancer)
 
     def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=None):
         if schema and not load_json:
