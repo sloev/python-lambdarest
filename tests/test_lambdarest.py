@@ -11,7 +11,7 @@ import unittest
 import base64
 from datetime import datetime
 
-from lambdarest import create_lambda_handler, Response
+from lambdarest import create_lambda_handler, Response, CORS
 
 
 def assert_not_called(mock):
@@ -1023,3 +1023,25 @@ class TestLambdarestFunctions(unittest.TestCase):
         self.lambda_handler.handle("post")(post_mock)
         result = self.lambda_handler(self.event, self.context)
         self.assertEqual(result["body"], "bar")
+
+    def test_cors_after_request(self):
+        CORS(self.lambda_handler)
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual("*", result["headers"]["Access-Control-Allow-Origin"])
+        self.assertEqual(
+            "GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE",
+            result["headers"]["Access-Control-Allow-Methods"],
+        )
+        self.assertNotIn("Access-Control-Allow-Credentials", result["headers"])
+        self.assertNotIn("Access-Control-Max-Age", result["headers"])
+
+    def test_cors_allow_credentials(self):
+        CORS(self.lambda_handler, supports_credentials=True)
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(True, result["headers"]["Access-Control-Allow-Credentials"])
