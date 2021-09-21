@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+from base64 import b64decode
 import json
 import logging
+from io import BytesIO, StringIO
 from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
 from werkzeug.routing import Map, Rule, NotFound
 from werkzeug.http import HTTP_STATUS_CODES
 from werkzeug.exceptions import HTTPException
+from werkzeug.datastructures import Headers
+from werkzeug.formparser import parse_form_data
 from distutils.util import strtobool
 
 from functools import wraps
@@ -356,9 +360,12 @@ def create_lambda_handler(
             application_load_balancer=application_load_balancer
         )
 
-    def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=None):
+    def inner_handler(method_name, path="/", schema=None, load_json=True, load_form_data=False, scopes=None):
         if schema and not load_json:
             raise ValueError("if schema is supplied, load_json needs to be true")
+
+        if load_json and load_form_data:
+            raise ValueError("load_json and load_form_data cannot both be true")
 
         query_param_schema = None
         if isinstance(schema, dict):
@@ -385,6 +392,21 @@ def create_lambda_handler(
                     if schema:
                         # jsonschema.validate using given schema
                         validate(json_data, schema, **__validate_kwargs)
+
+                if load_form_data:
+                    is_base64_encoded = event.get("isBase64Encoded")
+                    body = b64decode(event.get("body")) if is_base64_encoded else event.get("body")
+
+                    event["headers"] = Headers(event["headers"])
+
+                    environ = {
+                        "wsgi.input": BytesIO(body) if isinstance(body, bytes) else StringIO(body),
+                        "CONTENT_LENGTH": len(body),
+                        "CONTENT_TYPE": event["headers"]["Content-Type"],
+                        "REQUEST_METHOD": "POST",
+                    }
+
+                    _, event["form"], event["files"] = parse_form_data(environ)
 
                 try:
                     provided_scopes = json.loads(

@@ -996,3 +996,19 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(self.event, self.context)
         assert result["statusCode"] == 400
         assert result["body"] == "Invalid json body"
+
+    def test_form_data(self):
+        self.event["body"] = "foo=bar"
+
+        assert_event = copy.deepcopy(self.event)
+        assert_event["context"] = self.context
+        assert_event["form"] = {
+            "foo": "bar"
+        }
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post", load_json=False, load_form_data=True)(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result, {"body": "foo", "statusCode": 200, "headers": {}})
+
+        post_mock.assert_called_with(assert_event)
