@@ -560,6 +560,32 @@ assert result == {
 }
 ```
 
+## CORS
+
+You can wrap the lambda_handler in CORS to finegrain access.
+
+```python
+from lambdarest import lambda_handler, CORS
+
+CORS(lambda_handler, origin="*", methods=["GET"])
+
+@lambda_handler.handle("get")
+def my_own_get(event):
+    return {"this": "will be json dumped"}
+
+
+##### TEST #####
+
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{"Access-Control-Allow-Methods":"GET", "Access-Control-Allow-Origin": "*"}}
+```
+
 ## Tests
 
 This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.

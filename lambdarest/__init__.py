@@ -86,30 +86,29 @@ ACL_MAX_AGE = "Access-Control-Max-Age"
 ALL_METHODS = ["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
 
 
-class CORS(object):
-    def __init__(
-        self,
-        lambda_handler,
-        origin="*",
-        methods=ALL_METHODS,
-        supports_credentials=False,
-        max_age=None,
-    ):
-        def cors_after_request(response: Response) -> Response:
-            headers = response.headers
-            if headers is None:
-                headers = dict()
+def CORS(
+    lambda_handler,
+    origin="*",
+    methods=ALL_METHODS,
+    supports_credentials=False,
+    max_age=None,
+):
+    def cors_after_request(response: Response) -> Response:
+        headers = response.headers
+        if headers is None:
+            headers = dict()
 
-            headers.update({ACL_ORIGIN: origin, ACL_METHODS: ", ".join(methods)})
-            if supports_credentials:
-                headers.update({ACL_CREDENTIALS: supports_credentials})
-            if max_age:
-                headers.update({ACL_MAX_AGE: max_age})
+        headers.update({ACL_ORIGIN: origin, ACL_METHODS: ", ".join(methods)})
+        if supports_credentials:
+            headers.update({ACL_CREDENTIALS: supports_credentials})
+        if max_age:
+            headers.update({ACL_MAX_AGE: max_age})
 
-            response.headers = headers
-            return response
+        response.headers = headers
+        return response
 
-        lambda_handler.after_request(cors_after_request)
+    lambda_handler.after_request(cors_after_request)
+    return lambda_handler
 
 
 T = TypeVar("T")

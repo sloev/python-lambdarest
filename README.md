@@ -79,6 +79,7 @@ See [docs](https://github.com/trustpilot/python-lambdarest/blob/master/docs/READ
 * [Authorization Scopes](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#authorization-scopes)
 * [Exception Handling](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#exception-handling)
 * [AWS Application Load Balancer](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#aws-application-load-balancer)
+* [CORS](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#cors)
 
 
 ## Anormal unittest behaviour with `lambda_handler` singleton

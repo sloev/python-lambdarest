@@ -2,15 +2,17 @@ language: python
 
 jobs:
   include:
+    - stage: lint
+      python: 3.7
+      script: poetry run black --check tests/ lambdarest/
     - stage: python 3.6 pytest
       python: 3.6
     - stage: python 3.7 pytest
       python: 3.7
     - stage: python 3.8 pytest
       python: 3.8
-    - stage: lint
-      python: 3.7
-      script: poetry run black --check tests/ lambdarest/
+    - stage: python 3.9 pytest
+      python: 3.9
 
 cache: pip
 

@@ -177,3 +177,11 @@ First OSS release
 ### 11.1.0 (2021-08-03)
 
 - catch werkzeug exceptions
+
+### 12.0.0 (2021-09-22)
+
+**This is not a backwards compatible change.**
+
+- add decorators for pre- and post-request handling
+- add cors functionality
+- add type hints
