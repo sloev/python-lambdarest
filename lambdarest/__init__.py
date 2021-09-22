@@ -8,7 +8,8 @@ from werkzeug.http import HTTP_STATUS_CODES
 from werkzeug.exceptions import HTTPException
 from distutils.util import strtobool
 
-from functools import wraps
+from functools import wraps, reduce
+from typing import TypeVar, Union, List, Callable
 
 __validate_kwargs = {"format_checker": FormatChecker()}
 __required_keys = ["httpMethod"]
@@ -74,6 +75,56 @@ class Response(object):
                 }
             )
         return response
+
+
+# Response headers
+ACL_ORIGIN = "Access-Control-Allow-Origin"
+ACL_METHODS = "Access-Control-Allow-Methods"
+ACL_CREDENTIALS = "Access-Control-Allow-Credentials"
+ACL_MAX_AGE = "Access-Control-Max-Age"
+
+ALL_METHODS = ["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
+
+
+class CORS(object):
+    def __init__(
+        self,
+        lambda_handler,
+        origin="*",
+        methods=ALL_METHODS,
+        supports_credentials=False,
+        max_age=None,
+    ):
+        def cors_after_request(response: Response) -> Response:
+            headers = response.headers
+            if headers is None:
+                headers = dict()
+
+            headers.update({ACL_ORIGIN: origin, ACL_METHODS: ", ".join(methods)})
+            if supports_credentials:
+                headers.update({ACL_CREDENTIALS: supports_credentials})
+            if max_age:
+                headers.update({ACL_MAX_AGE: max_age})
+
+            response.headers = headers
+            return response
+
+        lambda_handler.after_request(cors_after_request)
+
+
+T = TypeVar("T")
+Maybe = Union[None, T]
+
+
+# If it returns a Response, the value is handled as if it was the return
+# value from the view, and further request handling is stopped.
+BeforeRequestCallable = Callable[[], Maybe[Response]]
+
+
+# The function is called with the response object, and must return a response
+# object. This allows the functions to modify or replace the response before it
+# is sent.
+AfterRequestCallable = Callable[[Response], Response]
 
 
 class ScopeMissing(Exception):
@@ -181,6 +232,13 @@ def check_update_and_fill_resource_placeholders(resource, path_parameters):
         return base_resource
 
 
+def __pipe_funcs(*funcs: Callable[[T], T]):
+    def pipe(value):
+        return reduce(lambda r, f: f(r), funcs, value)
+
+    return pipe
+
+
 def create_lambda_handler(
     error_handler=default_error_handler,
     json_encoder=json.JSONEncoder,
@@ -208,8 +266,12 @@ def create_lambda_handler(
 
     """
     url_maps = Map()
+    before_request_handlers: List[BeforeRequestCallable] = []
+    after_request_handlers: List[AfterRequestCallable] = []
 
     def inner_lambda_handler(event, context=None):
+        apply_after_request_handlers = __pipe_funcs(*after_request_handlers)
+
         # check if running as "aws lambda proxy"
         if (
             not isinstance(event, dict)
@@ -275,6 +337,14 @@ def create_lambda_handler(
 
         if func:
             try:
+                for handler in before_request_handlers:
+                    # pylint: disable=E1128
+                    response = handler()
+                    if response:
+                        return response.to_json(
+                            application_load_balancer=application_load_balancer
+                        )
+
                 response = func(event, **kwargs)
                 if not isinstance(response, Response):
                     # Set defaults
@@ -318,6 +388,9 @@ def create_lambda_handler(
                     response = Response(
                         body, status_code, headers, multiValueHeaders, isBase64Encoded
                     )
+
+                response = apply_after_request_handlers(response)
+
                 return response.to_json(
                     encoder=json_encoder,
                     application_load_balancer=application_load_balancer,
@@ -352,9 +425,9 @@ def create_lambda_handler(
                     raise
 
         body, status_code = error_tuple
-        return Response(body, status_code).to_json(
-            application_load_balancer=application_load_balancer
-        )
+        response = apply_after_request_handlers(Response(body, status_code))
+
+        return response.to_json(application_load_balancer=application_load_balancer)
 
     def inner_handler(method_name, path="/", schema=None, load_json=True, scopes=None):
         if schema and not load_json:
@@ -423,8 +496,28 @@ def create_lambda_handler(
 
         return wrapper
 
+    def after_request_handler(func):
+        @wraps(func)
+        def wrapper(request):
+            return func(request)
+
+        after_request_handlers.append(func)
+
+        return wrapper
+
+    def before_request_handler(func):
+        @wraps(func)
+        def wrapper(request):
+            return func(request)
+
+        before_request_handlers.append(func)
+
+        return wrapper
+
     lambda_handler = inner_lambda_handler
     lambda_handler.handle = inner_handler
+    lambda_handler.before_request = before_request_handler
+    lambda_handler.after_request = after_request_handler
     return lambda_handler
 
 

@@ -11,7 +11,7 @@ import unittest
 import base64
 from datetime import datetime
 
-from lambdarest import create_lambda_handler
+from lambdarest import create_lambda_handler, Response, CORS
 
 
 def assert_not_called(mock):
@@ -996,3 +996,52 @@ class TestLambdarestFunctions(unittest.TestCase):
         result = self.lambda_handler(self.event, self.context)
         assert result["statusCode"] == 400
         assert result["body"] == "Invalid json body"
+
+    def test_multiple_after_request_handlers(self):
+        @self.lambda_handler.after_request
+        def after1(response):
+            response.headers["Foo"] = "Bar"
+            return response
+
+        @self.lambda_handler.after_request
+        def after2(response):
+            response.headers["Baz"] = "Qux"
+            return response
+
+        post_mock = mock.Mock(return_value=Response(headers=dict()))
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual("Bar", result["headers"]["Foo"])
+        self.assertEqual("Qux", result["headers"]["Baz"])
+
+    def test_before_request_handler(self):
+        @self.lambda_handler.before_request
+        def before():
+            return Response("bar")
+
+        post_mock = mock.Mock(return_value=Response("foo"))
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(result["body"], "bar")
+
+    def test_cors_after_request(self):
+        CORS(self.lambda_handler)
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual("*", result["headers"]["Access-Control-Allow-Origin"])
+        self.assertEqual(
+            "GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE",
+            result["headers"]["Access-Control-Allow-Methods"],
+        )
+        self.assertNotIn("Access-Control-Allow-Credentials", result["headers"])
+        self.assertNotIn("Access-Control-Max-Age", result["headers"])
+
+    def test_cors_allow_credentials(self):
+        CORS(self.lambda_handler, supports_credentials=True)
+
+        post_mock = mock.Mock(return_value="foo")
+        self.lambda_handler.handle("post")(post_mock)
+        result = self.lambda_handler(self.event, self.context)
+        self.assertEqual(True, result["headers"]["Access-Control-Allow-Credentials"])
