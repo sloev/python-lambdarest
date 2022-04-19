@@ -1,5 +1,7 @@
 language: python
 
+dist: focal
+
 jobs:
   include:
     - stage: lint
