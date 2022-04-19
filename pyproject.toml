@@ -25,7 +25,7 @@ strict_rfc3339 = "^0.7"
 werkzeug = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.4.1"
+pytest = "^7.1.0"
 PyYaml = "^5.3.1"
 mock = "^4.0.2"
 pytest-readme = "^1.0.0"

@@ -16,7 +16,7 @@ with open("test_readme.py", "w") as out, open("./docs/README.md") as readme:
                 output[i] = '    """\n'
             mode = None
             continue
-        elif mode is "first_line":
+        elif mode == "first_line":
             if line.strip() == "":
                 mode = None
                 output[i - 1] = "\n"
