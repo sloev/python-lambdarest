@@ -26,7 +26,7 @@ werkzeug = "0.16.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"
-PyYaml = "^5.3.1"
+PyYaml = "^5.4"
 mock = "^4.0.2"
 pytest-readme = "^1.0.0"
 taskipy = "^1.2.1"
