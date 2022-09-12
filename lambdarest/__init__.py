@@ -3,9 +3,9 @@ import json
 import logging
 from string import Template
 from jsonschema import validate, ValidationError, FormatChecker
-from werkzeug.routing import Map, Rule, NotFound
+from werkzeug.routing import Map, Rule
 from werkzeug.http import HTTP_STATUS_CODES
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, NotFound
 from distutils.util import strtobool
 
 from functools import wraps, reduce
