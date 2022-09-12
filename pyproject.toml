@@ -19,18 +19,18 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-jsonschema = "^3.2.0"
+python = "^3.7"
+jsonschema = "^4.4.0"
 strict_rfc3339 = "^0.7"
-werkzeug = "0.16.1"
+werkzeug = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.4.1"
+pytest = "^7.1.0"
 PyYaml = "^5.3.1"
 mock = "^4.0.2"
 pytest-readme = "^1.0.0"
 taskipy = "^1.2.1"
-black = "^19.10b0"
+black = "^22.3.0"
 
 [tool.taskipy.tasks]
 test = "rm -f test_readme.py && pytest --doctest-modules -vvv"
