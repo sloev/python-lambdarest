@@ -185,3 +185,13 @@ First OSS release
 - add decorators for pre- and post-request handling
 - add cors functionality
 - add type hints
+
+
+
+### 12.0.1 (2022-09-12)
+
+THIS IS THE LAST RELEASE BY CURRENT MAINTAINER, IF YOU WANNA TAKE OVER: MAIL johannes.valbjorn+lambdarest @ the free email service  that google provides
+
+- update dependencies
+- use werkzeug.exceptions.NotFound
+

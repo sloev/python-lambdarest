@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lambdarest"
-version = "12.0.0"
+version = "12.0.1"
 description = "flask like web framework for AWS Lambda"
 authors = ["Johannes Valbjørn <johannes.valbjorn@gmail.com>"]
 license = "MIT"
@@ -28,9 +28,12 @@ werkzeug = "^2.0.0"
 pytest = "^7.1.0"
 PyYaml = "^5.3.1"
 mock = "^4.0.2"
-pytest-readme = "^1.0.0"
+pytest-readme = "^1.0.1"
 taskipy = "^1.2.1"
 black = "^22.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest-readme = "^1.0.1"
 
 [tool.taskipy.tasks]
 test = "rm -f test_readme.py && pytest --doctest-modules -vvv"
