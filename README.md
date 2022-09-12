@@ -1,5 +1,7 @@
 ![lambdarest logo](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest.png)
 
+# ⚠️ lambdarest is not maintained anymore, if anybody wanna take over, please contact me by email: johannes.valbjorn+lambdarest at the usual domain that rimes on email
+
 # lambdarest
 
 [![Build Status](https://travis-ci.com/sloev/python-lambdarest.svg?branch=master)](https://travis-ci.com/github/sloev/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![PyPI - Downloads](https://img.shields.io/pypi/dm/lambdarest?label=pypi%20downloads)](https://pypistats.org/packages/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme)
