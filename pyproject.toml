@@ -22,7 +22,7 @@ classifiers = [
 python = "^3.7"
 jsonschema = "^4.4.0"
 strict_rfc3339 = "^0.7"
-werkzeug = "^2.0.0"
+werkzeug = "^2.2.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.0"
