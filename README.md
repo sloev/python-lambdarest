@@ -1,12 +1,9 @@
-![lambdarest logo](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest.png)
+![test](https://github.com/sloev/python-lambdarest/actions/workflows/test.yml/badge.svg) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
 
-# ⚠️ LAMBDAREST HAS BEEN ARCHIVED AND REMOVED FROM PYPI SINCE ITS NOT MAINTAINED ANYMORE AND NO NEW MAINTAINER HAS BEEN FOUND
 
 # lambdarest
 
 Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
-
-> ⚠️ [A **user study** is currently happening here](https://github.com/sloev/python-lambdarest/issues/76), and your opinion makes the day! Thanks for participating! 😊
 
 ### Features
 
@@ -88,13 +85,13 @@ Because of python unittests leaky test-cases it seems like you shall beware of [
 
 ## Tests
 
-This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
-
 Use the following commands to install requirements and run test-suite:
 
 ```bash
-$ poetry install
-$ poetry run task test
+$ pip install -e ".[dev]"
+$ black tests/ lambdarest/
+$ rm -f test_readme.py
+$ pytest --doctest-modules -vvv
 ```
 
 For more info see [Contributing...](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)

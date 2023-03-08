@@ -1,3 +1,5 @@
+![test](https://github.com/sloev/python-lambdarest/actions/workflows/test.yml/badge.svg) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
+
 # Lambdarest Documentation
 
 Here you find updated documentation on how to use Lambdarest, please check as well the [tests](https://github.com/trustpilot/python-lambdarest/blob/master/docs/tests/) directory for some more examples.
@@ -588,13 +590,13 @@ assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, 
 
 ## Tests
 
-This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
-
 Use the following commands to install requirements and run test-suite:
 
 ```bash
-$ poetry install
-$ poetry run task test
+$ pip install -e ".[dev]"
+$ black tests/ lambdarest/
+$ rm -f test_readme.py
+$ pytest --doctest-modules -vvv
 ```
 
 For more info see [Contributing...](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)

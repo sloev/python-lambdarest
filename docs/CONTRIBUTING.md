@@ -22,13 +22,12 @@ There is two ways of running the lint+tests both of them require the install of 
 
 ### 1. Run for current python version
 
-This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
-
 Use the following commands to install requirements and run test-suite:
 
 ```bash
-$ poetry install
-$ poetry run task test
+$ pip install -e ".[dev]"
+$ rm -f test_readme.py
+$ pytest --doctest-modules -vvv
 ```
 
 Which 
@@ -44,5 +43,12 @@ for the current python version.
 Be sure to see if linting is correct before commiting. The following make target fixes linting issues and makes you aware of errors
 
 ```bash
-$ poetry run black .
+$ black tests/ lambdarest/
+```
+
+### Packaging and publishing
+
+```bash
+python3 -m build
+python3 -m twine upload dist/*
 ```
