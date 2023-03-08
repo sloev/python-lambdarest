@@ -1,7 +1,7 @@
-![test](https://github.com/sloev/python-lambdarest/actions/workflows/test.yml/badge.svg) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest)
+![test](https://github.com/sloev/python-lambdarest/actions/workflows/test.yml/badge.svg) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) 
 
 
-# lambdarest
+# lambdarest  <a href="https://www.buymeacoffee.com/sloev" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-pink.png" alt="Buy Me A Coffee" height="51px" width="217px"></a>
 
 Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
@@ -11,17 +11,11 @@ Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) w
 * Decorator to register functions to handle HTTP methods
 * Optional JSON-schema input validation using same decorator
 
-### Support the development ❤️
+### Merchandise ❤️
 
-You can support the development by:
+You can support the development by [buying a wonderful cup](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD) or [buy coffee for the maintainers cup](https://buymeacoffee.com/sloev)
 
-1. [Contributing code](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
-2. [Buying the maintainer a coffee](https://buymeacoffee.com/sloev)
-3. [Buying some Lambdarest swag](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
-
-    like this mug for example: 
-
-    [![lambdarest mug](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest_mug.png)](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
+[![lambdarest mug](https://raw.githubusercontent.com/sloev/python-lambdarest/master/.github/lambdarest_mug.jpg)](https://www.redbubble.com/i/mug/Lambdarest-by-sloev/73793554.9Q0AD)
 
 ### External articles / tutorials
 
