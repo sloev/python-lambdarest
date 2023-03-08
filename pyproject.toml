@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lambdarest"
-version = "13.0.0"
+version = "13.0.1"
 description = "flask like web framework for AWS Lambda"
 authors = [{ name = "Johannes Valbjørn", email = "johannes.valbjorn@gmail.com" }]
 license = { file = "LICENSE" }
@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "jsonschema >= 4.4.0",
     "strict_rfc3339 >= 0.7",
-    "werkzeug >= 2.0.0",
+    "werkzeug >= 2.2.3",
 ]
 requires-python = ">=3.7"
 

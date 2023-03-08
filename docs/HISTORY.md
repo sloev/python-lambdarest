@@ -202,3 +202,6 @@ THIS IS THE LAST RELEASE BY CURRENT MAINTAINER, IF YOU WANNA TAKE OVER: MAIL joh
 
 re publish project, new energy
 
+### 13.0.1 (2023-04-08)
+
+- upgrade werkzeug to >= 2.2.3
