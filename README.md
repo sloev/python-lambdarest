@@ -103,3 +103,10 @@ Thanks for contributing!
 [Wanna contribute?](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
 
 And by the way, we have a [Code Of Friendlyhood!](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CODE_OF_CONDUCT.md)
+
+
+## FAQ
+
+* Where is all the old versions?
+  they are gone see more here: https://github.com/sloev/python-lambdarest/issues/94
+* What can i do to get the attention of the maintainer? see more here: https://github.com/sloev/python-lambdarest#merchandise
